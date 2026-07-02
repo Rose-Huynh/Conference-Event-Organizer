@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TechConnect 2026 — Conference Event Organizer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="home.css" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- Announcement Banner -->
+  <div class="announce-bar">
+    📢 Early bird registration closes July 15th — <a href="signup.html">Register now</a> and save your spot!
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="index.html">
+        <span class="nav-dot"></span>TechConnect 2026
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto align-items-center gap-3">
+          <li class="nav-item"><a class="nav-link" href="#schedule">Schedule</a></li>
+          <li class="nav-item"><a class="nav-link" href="#speakers">Speakers</a></li>
+          <li class="nav-item"><a class="nav-link" href="#announcements">Announcements</a></li>
+          <li class="nav-item"><a class="nav-link btn-nav-cta" href="signup.html">Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <span class="hero-eyebrow">August 12, 2026 &nbsp;·&nbsp; State College, PA</span>
+      <h1 class="mt-2 mb-3">Where Ideas <span>Connect</span><br>and Futures Begin</h1>
+      <p class="mb-4">TechConnect 2026 brings together industry leaders, innovators, and students for a full day of talks, workshops, and networking across technology and information sciences.</p>
+      <div class="d-flex gap-3 flex-wrap mb-5">
+        <a href="signup.html" class="btn-hero-primary">Register Now</a>
+        <a href="#schedule" class="btn-hero-outline">View Schedule</a>
+      </div>
+      <div class="d-flex gap-5 flex-wrap">
+        <div><span class="stat-num">12+</span><span class="stat-label">Speakers</span></div>
+        <div><span class="stat-num">8</span><span class="stat-label">Sessions</span></div>
+        <div><span class="stat-num">1 Day</span><span class="stat-label">Full Program</span></div>
+        <div><span class="stat-num">Free</span><span class="stat-label">Admission</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schedule -->
+  <section id="schedule" class="py-5 bg-light-blue">
+    <div class="container">
+      <div class="section-label">Program</div>
+      <div class="section-title">Event Schedule</div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="schedule-card">
+            <span class="time">9:00 AM</span>
+            <h3>Opening Keynote</h3>
+            <p>Welcome remarks and the state of technology in 2026 — what's changed and what's coming.</p>
+            <span class="session-tag">Keynote</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="schedule-card">
+            <span class="time">10:30 AM</span>
+            <h3>Web Development Trends</h3>
+            <p>A deep dive into modern frameworks, performance optimization, and the evolution of the web.</p>
+            <span class="session-tag">Workshop</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="schedule-card">
+            <span class="time">12:00 PM</span>
+            <h3>Networking Lunch</h3>
+            <p>Connect with speakers, peers, and industry professionals over a catered lunch break.</p>
+            <span class="session-tag">Networking</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="schedule-card">
+            <span class="time">1:30 PM</span>
+            <h3>Database & Backend Systems</h3>
+            <p>Exploring scalable data storage, retrieval patterns, and modern database architectures.</p>
+            <span class="session-tag">Talk</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="schedule-card">
+            <span class="time">3:00 PM</span>
+            <h3>Student Project Showcase</h3>
+            <p>Highlighting standout student projects from IST programs across Penn State.</p>
+            <span class="session-tag">Showcase</span>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="schedule-card">
+            <span class="time">4:30 PM</span>
+            <h3>Closing Panel & Q&A</h3>
+            <p>An open discussion with all speakers — bring your questions.</p>
+            <span class="session-tag">Panel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Speakers -->
+  <section id="speakers" class="py-5">
+    <div class="container">
+      <div class="section-label">Featured</div>
+      <div class="section-title">Speaker Profiles</div>
+      <div class="row g-4 text-center">
+        <div class="col-6 col-md-3 speaker-card">
+          <div class="speaker-avatar speaker-avatar-blue">AJ</div>
+          <h3>Dr. Amara Johnson</h3>
+          <p>Professor of Information Sciences, Penn State</p>
+        </div>
+        <div class="col-6 col-md-3 speaker-card">
+          <div class="speaker-avatar speaker-avatar-green">ML</div>
+          <h3>Marcus Lee</h3>
+          <p>Senior Engineer, Google Cloud</p>
+        </div>
+        <div class="col-6 col-md-3 speaker-card">
+          <div class="speaker-avatar speaker-avatar-purple">SR</div>
+          <h3>Sofia Reyes</h3>
+          <p>UX Lead, Microsoft Design</p>
+        </div>
+        <div class="col-6 col-md-3 speaker-card">
+          <div class="speaker-avatar speaker-avatar-red">KP</div>
+          <h3>Kevin Park</h3>
+          <p>Founder, DataBridge Startups</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Announcements -->
+  <section id="announcements" class="py-5 bg-light-blue">
+    <div class="container">
+      <div class="section-label">Updates</div>
+      <div class="section-title">Announcements</div>
+      <div class="announcements-list d-flex flex-column gap-3">
+        <div class="announcement-item">
+          <div class="ann-date">June 27, 2026</div>
+          <h3>Registration is now open!</h3>
+          <p>All attendees can register using the registration form. Spots are limited — secure yours early.</p>
+        </div>
+        <div class="announcement-item">
+          <div class="ann-date">June 20, 2026</div>
+          <h3>Speaker lineup announced</h3>
+          <p>We are excited to confirm our four featured speakers for TechConnect 2026. Full bios available soon.</p>
+        </div>
+        <div class="announcement-item">
+          <div class="ann-date">June 14, 2026</div>
+          <h3>TechConnect 2026 officially launched</h3>
+          <p>The planning committee has launched the official conference website. Check back regularly for updates.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="register-cta py-5 text-center">
+    <div class="container">
+      <h2 class="mb-2">Ready to Join Us?</h2>
+      <p class="mb-4">Registration is free and open to all Penn State students, faculty, and guests.</p>
+      <a href="signup.html" class="btn-hero-primary">Register for TechConnect 2026</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-3 text-center">
+    <p class="mb-0">© 2026 TechConnect Conference &nbsp;·&nbsp; IST 256 Group 2 — Homepage by Helly Patel &nbsp;·&nbsp; <a href="mailto:nmg5890@psu.edu">Contact Us</a></p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
