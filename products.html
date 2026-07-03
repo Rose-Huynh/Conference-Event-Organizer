@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Management - TechConnect 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="css/products.css" rel="stylesheet"/>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="index.html"><span class="nav-dot"></span>TechConnect 2026</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto gap-3">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="sessions.html">Sessions</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-active fw-bold" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="signup.html">Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <span class="page-label">Product Management</span>
+      <h1>Event Materials and Products</h1>
+      <p class="mb-0">Track conference materials, digital resources, merchandise, and product values.</p>
+    </div>
+  </header>
+
+  <main class="container py-5">
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <section class="form-card">
+          <h2 class="section-title mb-4">Add or Update Product</h2>
+
+          <form>
+            <div class="mb-3">
+              <label class="form-label" for="productId">Product ID <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="productId" placeholder="e.g. P100"/>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="productTitle">Title or Description <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="productTitle" placeholder="e.g. Conference T-Shirt"/>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="productCategory">Category or Type <span class="text-danger">*</span></label>
+              <select class="form-select" id="productCategory">
+                <option value="">Select product type</option>
+                <option>Merchandise</option>
+                <option>Digital Material</option>
+                <option>Printed Material</option>
+                <option>Meal Voucher</option>
+                <option>Event Access</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="productUnit">Unit of Measure or Format <span class="text-danger">*</span></label>
+              <select class="form-select" id="productUnit">
+                <option value="">Select unit or format</option>
+                <option>Each</option>
+                <option>PDF Download</option>
+                <option>Printed Packet</option>
+                <option>Ticket</option>
+                <option>Bundle</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="productPrice">Price or Value <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" id="productPrice" placeholder="e.g. 15"/>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label" for="productInfo">Optional Extra Info</label>
+              <textarea class="form-control" id="productInfo" rows="3" placeholder="Weight, color, file type, stock amount, or notes"></textarea>
+            </div>
+
+            <div class="d-grid gap-2 d-sm-flex">
+              <button type="submit" class="btn-submit flex-fill">Save Product</button>
+              <button type="reset" class="btn-reset flex-fill">Clear</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="col-lg-7">
+        <section class="table-section mb-4">
+          <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
+            <div>
+              <h2 class="section-title mb-1">Current Products</h2>
+              <p class="section-help mb-0">Sample product details for conference resources and materials.</p>
+            </div>
+            <input type="search" class="form-control search-input" placeholder="Search products"/>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Unit</th>
+                  <th>Price</th>
+                  <th>Info</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>P100</strong></td>
+                  <td>Conference T-Shirt</td>
+                  <td><span class="badge-type">Merchandise</span></td>
+                  <td>Each</td>
+                  <td>$15</td>
+                  <td>Navy, cotton, sizes S-XL</td>
+                </tr>
+                <tr>
+                  <td><strong>P210</strong></td>
+                  <td>Workshop Slide Deck</td>
+                  <td><span class="badge-type">Digital Material</span></td>
+                  <td>PDF Download</td>
+                  <td>$0</td>
+                  <td>Available after session</td>
+                </tr>
+                <tr>
+                  <td><strong>P315</strong></td>
+                  <td>Lunch Voucher</td>
+                  <td><span class="badge-type">Meal Voucher</span></td>
+                  <td>Ticket</td>
+                  <td>$12</td>
+                  <td>Valid 12:00 PM to 1:00 PM</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="table-section">
+          <h2 class="section-title mb-3">Product JSON Preview</h2>
+          <pre class="json-box">[
+  {
+    "id": "P100",
+    "description": "Conference T-Shirt",
+    "category": "Merchandise",
+    "unit": "Each",
+    "price": 15,
+    "info": "Navy, cotton, sizes S-XL"
+  }
+]</pre>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-3 text-center">
+    <p class="mb-0">© 2026 TechConnect Conference &nbsp;·&nbsp; Product Management Page</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
