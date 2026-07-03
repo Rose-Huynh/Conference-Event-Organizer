@@ -125,10 +125,6 @@ body {
   background: #D1D5DB;
 }
 
-.search-input {
-  max-width: 260px;
-}
-
 .badge-type {
   background: #EFF6FF;
   border-radius: 4px;
@@ -164,7 +160,4 @@ footer {
     padding: 1.4rem;
   }
 
-  .search-input {
-    max-width: 100%;
-  }
 }

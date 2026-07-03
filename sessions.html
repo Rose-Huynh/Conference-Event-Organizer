@@ -44,12 +44,12 @@
           <form>
             <div class="mb-3">
               <label class="form-label" for="sessionId">Session ID <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="sessionId" placeholder="e.g. S101"/>
+              <input type="text" class="form-control" id="sessionId" placeholder="Enter session ID"/>
             </div>
 
             <div class="mb-3">
               <label class="form-label" for="sessionTitle">Title or Description <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="sessionTitle" placeholder="e.g. Opening Keynote"/>
+              <input type="text" class="form-control" id="sessionTitle" placeholder="Enter session title or description"/>
             </div>
 
             <div class="mb-3">
@@ -77,7 +77,7 @@
 
             <div class="mb-3">
               <label class="form-label" for="sessionPrice">Price or Value <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" id="sessionPrice" placeholder="e.g. 0"/>
+              <input type="number" class="form-control" id="sessionPrice" placeholder="Enter price or value"/>
             </div>
 
             <div class="mb-4">
@@ -95,12 +95,11 @@
 
       <div class="col-lg-7">
         <section class="table-section mb-4">
-          <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
+          <div class="mb-3">
             <div>
               <h2 class="section-title mb-1">Current Sessions</h2>
-              <p class="section-help mb-0">Sample entries show how session content will appear after being added.</p>
+              <p class="section-help mb-0">Session entries will appear here after they are added.</p>
             </div>
-            <input type="search" class="form-control search-input" placeholder="Search sessions"/>
           </div>
 
           <div class="table-responsive">
@@ -117,28 +116,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>S101</strong></td>
-                  <td>Opening Keynote</td>
-                  <td><span class="badge-type">Keynote</span></td>
-                  <td>Single Session</td>
-                  <td>$0</td>
-                  <td>Main Auditorium, 9:00 AM</td>
-                </tr>
-                <tr>
-                  <td><strong>S205</strong></td>
-                  <td>Web Development Trends</td>
-                  <td><span class="badge-type">Workshop</span></td>
-                  <td>Workshop Block</td>
-                  <td>$25</td>
-                  <td>Room B, 60 seats</td>
-                </tr>
-                <tr>
-                  <td><strong>S330</strong></td>
-                  <td>Closing Panel and Q&amp;A</td>
-                  <td><span class="badge-type">Panel</span></td>
-                  <td>Panel Discussion</td>
-                  <td>$0</td>
-                  <td>All speakers, 4:30 PM</td>
+                  <td colspan="6" class="text-center text-muted py-4">No sessions added yet.</td>
                 </tr>
               </tbody>
             </table>
@@ -147,16 +125,7 @@
 
         <section class="table-section">
           <h2 class="section-title mb-3">Session JSON Preview</h2>
-          <pre class="json-box">[
-  {
-    "id": "S101",
-    "description": "Opening Keynote",
-    "category": "Keynote",
-    "unit": "Single Session",
-    "price": 0,
-    "info": "Main Auditorium, 9:00 AM"
-  }
-]</pre>
+          <pre class="json-box">[]</pre>
         </section>
       </div>
     </div>

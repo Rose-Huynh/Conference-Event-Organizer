@@ -44,12 +44,12 @@
           <form>
             <div class="mb-3">
               <label class="form-label" for="productId">Product ID <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="productId" placeholder="e.g. P100"/>
+              <input type="text" class="form-control" id="productId" placeholder="Enter product ID"/>
             </div>
 
             <div class="mb-3">
               <label class="form-label" for="productTitle">Title or Description <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="productTitle" placeholder="e.g. Conference T-Shirt"/>
+              <input type="text" class="form-control" id="productTitle" placeholder="Enter product title or description"/>
             </div>
 
             <div class="mb-3">
@@ -78,7 +78,7 @@
 
             <div class="mb-3">
               <label class="form-label" for="productPrice">Price or Value <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" id="productPrice" placeholder="e.g. 15"/>
+              <input type="number" class="form-control" id="productPrice" placeholder="Enter price or value"/>
             </div>
 
             <div class="mb-4">
@@ -96,12 +96,11 @@
 
       <div class="col-lg-7">
         <section class="table-section mb-4">
-          <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-3">
+          <div class="mb-3">
             <div>
               <h2 class="section-title mb-1">Current Products</h2>
-              <p class="section-help mb-0">Sample product details for conference resources and materials.</p>
+              <p class="section-help mb-0">Product entries will appear here after they are added.</p>
             </div>
-            <input type="search" class="form-control search-input" placeholder="Search products"/>
           </div>
 
           <div class="table-responsive">
@@ -118,28 +117,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>P100</strong></td>
-                  <td>Conference T-Shirt</td>
-                  <td><span class="badge-type">Merchandise</span></td>
-                  <td>Each</td>
-                  <td>$15</td>
-                  <td>Navy, cotton, sizes S-XL</td>
-                </tr>
-                <tr>
-                  <td><strong>P210</strong></td>
-                  <td>Workshop Slide Deck</td>
-                  <td><span class="badge-type">Digital Material</span></td>
-                  <td>PDF Download</td>
-                  <td>$0</td>
-                  <td>Available after session</td>
-                </tr>
-                <tr>
-                  <td><strong>P315</strong></td>
-                  <td>Lunch Voucher</td>
-                  <td><span class="badge-type">Meal Voucher</span></td>
-                  <td>Ticket</td>
-                  <td>$12</td>
-                  <td>Valid 12:00 PM to 1:00 PM</td>
+                  <td colspan="6" class="text-center text-muted py-4">No products added yet.</td>
                 </tr>
               </tbody>
             </table>
@@ -148,16 +126,7 @@
 
         <section class="table-section">
           <h2 class="section-title mb-3">Product JSON Preview</h2>
-          <pre class="json-box">[
-  {
-    "id": "P100",
-    "description": "Conference T-Shirt",
-    "category": "Merchandise",
-    "unit": "Each",
-    "price": 15,
-    "info": "Navy, cotton, sizes S-XL"
-  }
-]</pre>
+          <pre class="json-box">[]</pre>
         </section>
       </div>
     </div>
