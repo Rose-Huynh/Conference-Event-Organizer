@@ -68,7 +68,7 @@ function submitProduct(event) {
   }
 
   saveProduct();
-  renderProduct(products);
+  renderProducts(products);
   renderJSON(products);
   resetForm();
   showToast();
@@ -86,17 +86,17 @@ function renderProducts(data) {
     return;
   }
 
-  const rows = data.map((products) => {
-    const originalIndex = products.findIndex(item => item.productId === products.productId);
+  const rows = data.map((product) => {
+    const originalIndex = products.findIndex(item => item.productId === product.productId);
 
     return `
       <tr>
-        <td><strong>${products.productId}</strong></td>
-        <td>${products.description}</td>
-        <td><span class="badge-type">${products.category}</span></td>
-        <td>${products.unitOfMeasure}</td>
-        <td>$${products.price}</td>
-        <td>${products.additionalInfo}</td>
+        <td><strong>${product.productId}</strong></td>
+        <td>${product.description}</td>
+        <td><span class="badge-type">${product.category}</span></td>
+        <td>${product.unitOfMeasure}</td>
+        <td>$${product.price}</td>
+        <td>${product.additionalInfo}</td>
         <td>
           <button class="btn-edit me-1" type="button" data-index="${originalIndex}">Edit</button>
           <button class="btn-delete" type="button" data-index="${originalIndex}">Delete</button>
@@ -115,13 +115,13 @@ function renderJSON(data) {
 function searchProducts() {
   const searchTerm = $('#searchInput').val().toLowerCase();
 
-  const filteredProducts = products.filter(products => {
+  const filteredProducts = products.filter(product => {
     return (
-      products.productId.toLowerCase().includes(searchTerm) ||
-      products.description.toLowerCase().includes(searchTerm) ||
-      products.category.toLowerCase().includes(searchTerm) ||
-      products.unitOfMeasure.toLowerCase().includes(searchTerm) ||
-      products.additionalInfo.toLowerCase().includes(searchTerm)
+      product.productId.toLowerCase().includes(searchTerm) ||
+      product.description.toLowerCase().includes(searchTerm) ||
+      product.category.toLowerCase().includes(searchTerm) ||
+      product.unitOfMeasure.toLowerCase().includes(searchTerm) ||
+      product.additionalInfo.toLowerCase().includes(searchTerm)
     );
   });
 
@@ -129,15 +129,15 @@ function searchProducts() {
   renderJSON(filteredProducts);
 }
 
-function editProducts(index) {
-  const products = products[index];
+function editProduct(index) {
+  const product = products[index];
 
-  $('#productsId').val(products.productId);
-  $('#productsTitle').val(products.description);
-  $('#productsCategory').val(products.category);
-  $('#productsUnit').val(products.unitOfMeasure);
-  $('#productsPrice').val(products.price);
-  $('#productsInfo').val(products.additionalInfo === 'N/A' ? '' : products.additionalInfo);
+  $('#productId').val(product.productId);
+  $('#productTitle').val(product.description);
+  $('#productCategory').val(product.category);
+  $('#productUnit').val(product.unitOfMeasure);
+  $('#productPrice').val(product.price);
+  $('#productInfo').val(product.additionalInfo === 'N/A' ? '' : product.additionalInfo);
 
   $('#editIndex').val(index);
   $('#formTitle').text('Update Product');
@@ -193,7 +193,7 @@ $(document).ready(function () {
 
   $('#productTable').on('click', '.btn-edit', function () {
     const index = parseInt($(this).data('index'), 10);
-    editProducts(index);
+    editProduct(index);
   });
 
   $('#productTable').on('click', '.btn-delete', function () {
