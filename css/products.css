@@ -159,5 +159,67 @@ footer {
   .table-section {
     padding: 1.4rem;
   }
+}
 
+.error-msg {
+  color: #DC2626;
+  display: none;
+  font-size: 0.78rem;
+  margin-top: 3px;
+}
+
+.error-msg.show {
+  display: block;
+}
+
+.input-error {
+  border-color: #DC2626 !important;
+}
+
+.input-success {
+  border-color: #059669 !important;
+}
+
+.btn-edit {
+  background: none;
+  border: 1px solid var(--blue);
+  border-radius: 5px;
+  color: var(--blue);
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+}
+
+.btn-edit:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.btn-delete {
+  background: none;
+  border: 1px solid #DC2626;
+  border-radius: 5px;
+  color: #DC2626;
+  cursor: pointer;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+}
+
+.btn-delete:hover {
+  background: #DC2626;
+  color: #fff;
+}
+
+.success-toast {
+  background: #059669;
+  border-radius: 8px;
+  color: #fff;
+  display: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.75rem 1.2rem;
+  position: fixed;
+  right: 1.2rem;
+  top: 1.2rem;
+  z-index: 9999;
 }
