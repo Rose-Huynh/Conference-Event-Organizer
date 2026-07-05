@@ -10,6 +10,8 @@
 </head>
 <body>
 
+  <div class="success-toast" id="successToast">Product saved successfully!</div>
+
   <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
     <div class="container-fluid px-4">
       <a class="navbar-brand" href="index.html"><span class="nav-dot"></span>TechConnect 2026</a>
@@ -39,17 +41,21 @@
     <div class="row g-4">
       <div class="col-lg-5">
         <section class="form-card">
-          <h2 class="section-title mb-4">Add or Update Product</h2>
+          <h2 class="section-title mb-4" id="formTitle">Add Product</h2>
 
-          <form>
+          <form id="productForm" novalidate>
+            <input type="hidden" id="editIndex" value="-1"/>
+
             <div class="mb-3">
               <label class="form-label" for="productId">Product ID <span class="text-danger">*</span></label>
               <input type="text" class="form-control" id="productId" placeholder="Enter product ID"/>
+              <div class="error-msg" id="productIdErr">Product ID is required.</div>
             </div>
 
             <div class="mb-3">
               <label class="form-label" for="productTitle">Title or Description <span class="text-danger">*</span></label>
               <input type="text" class="form-control" id="productTitle" placeholder="Enter product title or description"/>
+              <div class="error-msg" id="productTitleErr">Title or description is required.</div>
             </div>
 
             <div class="mb-3">
@@ -62,6 +68,7 @@
                 <option>Meal Voucher</option>
                 <option>Event Access</option>
               </select>
+              <div class="error-msg" id="productCategoryErr">Please select a category.</div>
             </div>
 
             <div class="mb-3">
@@ -74,11 +81,13 @@
                 <option>Ticket</option>
                 <option>Bundle</option>
               </select>
+              <div class="error-msg" id="productUnitErr">Please select a unit or format.</div>
             </div>
 
             <div class="mb-3">
               <label class="form-label" for="productPrice">Price or Value <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" id="productPrice" placeholder="Enter price or value"/>
+              <input type="number" class="form-control" id="productPrice" placeholder="Enter price or value" min="0" step="0.01"/>
+              <div class="error-msg" id="productPriceErr">Please enter a valid price or value.</div>
             </div>
 
             <div class="mb-4">
@@ -87,20 +96,28 @@
             </div>
 
             <div class="d-grid gap-2 d-sm-flex">
-              <button type="submit" class="btn-submit flex-fill">Save Product</button>
-              <button type="reset" class="btn-reset flex-fill">Clear</button>
+              <button type="submit" class="btn-submit flex-fill" id="saveProduct">Save Product</button>
+              <button type="button" class="btn-reset flex-fill" id="clearProduct">Clear</button>
             </div>
           </form>
         </section>
       </div>
 
       <div class="col-lg-7">
+
         <section class="table-section mb-4">
-          <div class="mb-3">
+          <h2 class="section-title mb-3">Search Products</h2>
+          <input type="text" class="form-control" id="searchInput" placeholder="Search by ID, title, category, unit, or info"/>
+          <p class="section-help mt-2 mb-0">This search uses jQuery to filter the JSON product entries.</p>
+        </section>
+
+        <section class="table-section mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
               <h2 class="section-title mb-1">Current Products</h2>
               <p class="section-help mb-0">Product entries will appear here after they are added.</p>
             </div>
+            <span class="badge bg-primary" id="countBadge">0 products</span>
           </div>
 
           <div class="table-responsive">
@@ -113,11 +130,12 @@
                   <th>Unit</th>
                   <th>Price</th>
                   <th>Info</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="productTable">
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">No products added yet.</td>
+                  <td colspan="7" class="text-center text-muted py-4">No products added yet.</td>
                 </tr>
               </tbody>
             </table>
@@ -126,16 +144,19 @@
 
         <section class="table-section">
           <h2 class="section-title mb-3">Product JSON Preview</h2>
-          <pre class="json-box">[]</pre>
+          <pre class="json-box" id="jsonPreview">[]</pre>
         </section>
+
       </div>
     </div>
   </main>
 
   <footer class="py-3 text-center">
-    <p class="mb-0">© 2026 TechConnect Conference &nbsp;·&nbsp; Product Management Page</p>
+    <p class="mb-0">&copy; 2026 TechConnect Conference &nbsp;&middot;&nbsp; Product Management Page</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="products.js"></script>
 </body>
 </html>
