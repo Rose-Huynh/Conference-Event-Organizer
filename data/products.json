@@ -1,0 +1,74 @@
+[
+  {
+    "productId": "P101",
+    "name": "Conference Badge w/Printed Name",
+    "category": "Printed Material",
+    "unitOfMeasure": "Each",
+    "price": "2.50",
+    "description": "White badge stock"
+  },
+  {
+    "productId": "P102",
+    "name": "Speaker Welcome Kit",
+    "category": "Merchandise",
+    "unitOfMeasure": "Bundle",
+    "price": "25.00",
+    "description": "Notebook, lanyard, and speaker badge"
+  },
+  {
+    "productId": "P103",
+    "name": "Workshop Material Packet",
+    "category": "Printed Material",
+    "unitOfMeasure": "Printed Packet",
+    "price": "8.99",
+    "description": "Session handouts and activity sheets"
+  },
+  {
+    "productId": "P104",
+    "name": "Session Room Signage",
+    "category": "Printed Material",
+    "unitOfMeasure": "Each",
+    "price": "14.75",
+    "description": "Foam board directional sign"
+  },
+  {
+    "productId": "P105",
+    "name": "VIP Attendee Package",
+    "category": "Event Access",
+    "unitOfMeasure": "Ticket",
+    "price": "49.99",
+    "description": "Priority seating and welcome gift"
+  },
+  {
+    "productId": "P106",
+    "name": "Conference Water Bottle",
+    "category": "Merchandise",
+    "unitOfMeasure": "Each",
+    "price": "12.00",
+    "description": "Reusable branded water bottle"
+  },
+  {
+    "productId": "P107",
+    "name": "Conference Tote Bag",
+    "category": "Merchandise",
+    "unitOfMeasure": "Each",
+    "price": "10.00",
+    "description": "Reusable tote bag for event materials"
+  },
+  {
+    "productId": "P108",
+    "name": "Parking Pass",
+    "category": "Event Access",
+    "unitOfMeasure": "Ticket",
+    "price": "8.00",
+    "description": "One-day conference parking access"
+  },
+  {
+    "productId": "P109",
+    "name": "Conference Lanyard",
+    "category": "Merchandise",
+    "unitOfMeasure": "Each",
+    "price": "3.25",
+    "description": "Branded lanyard for attendee badges"
+  }
+]
