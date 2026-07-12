@@ -62,6 +62,21 @@ function money(value) {
   return '$' + Number(value).toFixed(2);
 }
 
+function getCartTotal() {
+  return cartItems.reduce(function (sum, item) {
+    return sum + Number(item.price) * item.quantity;
+  }, 0);
+}
+
+function buildCartPayload() {
+  return {
+    cartId: 'TC-CART-001',
+    event: 'TechConnect 2026',
+    items: cartItems,
+    total: Number(getCartTotal().toFixed(2))
+  };
+}
+
 function showToast(message) {
   $('#cartToast').text(message).fadeIn(200);
 
@@ -96,8 +111,12 @@ function renderProducts(productList) {
   $('#productResults').html(rows);
 }
 
-function renderCart() {
-  if (cartItems.length === 0) {
+  function renderCartJSON() {
+    $('#cartJsonPreview').text(JSON.stringify(buildCartPayload(), null, 2));
+  }
+
+  function renderCart() {
+    if (cartItems.length === 0) {
     $('#cartTable').html('<tr><td colspan="5" class="text-center text-muted py-4">Your cart is empty.</td></tr>');
   } else {
     const rows = cartItems.map(function (item) {
@@ -118,12 +137,10 @@ function renderCart() {
 
     $('#cartTable').html(rows);
   }
+  
+  $('#cartTotal').text(money(getCartTotal()));
 
-  const total = cartItems.reduce(function (sum, item) {
-    return sum + Number(item.price) * item.quantity;
-  }, 0);
-
-  $('#cartTotal').text(money(total));
+  renderCartJSON();
 }
 
 function searchProducts() {
@@ -141,6 +158,11 @@ function searchProducts() {
   });
 
   renderProducts(results);
+}
+
+function clearCheckoutMessages() {
+  $('#checkoutMessage').removeClass('text-success text-danger').text('');
+  $('#ajaxStatus').removeClass('text-success text-danger').text('');
 }
 
 function addToCart(productId) {
@@ -168,6 +190,9 @@ function addToCart(productId) {
 
   saveCart();
   renderCart();
+
+  clearCheckoutMessages();
+
   showToast('Product added to cart.');
 }
 
@@ -178,9 +203,45 @@ function removeFromCart(productId) {
 
   saveCart();
   renderCart();
+
+  clearCheckoutMessages();
+
   showToast('Product removed from cart.');
 }
 
+function checkoutCart() {
+  clearCheckoutMessages();
+
+  if (cartItems.length === 0) {
+    $('#checkoutMessage')
+      .addClass('text-danger')
+      .text('Cart must contain at least one item before checkout.');
+    return;
+  }
+
+  const cartPayload = buildCartPayload();
+
+  $('#checkoutMessage')
+    .addClass('text-success')
+    .text('Cart is ready for checkout.');
+
+  $.ajax({
+    url: '/api/cart',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(cartPayload),
+    success: function () {
+      $('#ajaxStatus')
+        .addClass('text-success')
+        .text('Cart data sent successfully to the REST API.');
+    },
+    error: function () {
+      $('#ajaxStatus')
+        .addClass('text-danger')
+        .text('Future REST API is not available yet, but the AJAX request and JSON payload are ready.');
+    }
+  });
+}
 function initializeCartPage() {
   products = loadAllProducts();
   cartItems = loadCartItems();
@@ -197,6 +258,8 @@ function initializeCartPage() {
   $('#cartTable').on('click', '.remove-from-cart', function () {
     removeFromCart($(this).data('id'));
   });
+
+  $('#checkoutButton').on('click', checkoutCart);
 }
 
 $(document).ready(function () {
