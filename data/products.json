@@ -2,73 +2,82 @@
   {
     "productId": "P101",
     "name": "Conference Badge w/Printed Name",
+    "description": "Printed attendee badge with the attendee name and event branding.",
     "category": "Printed Material",
     "unitOfMeasure": "Each",
     "price": "2.50",
-    "description": "White badge stock"
+    "additionalInfo": "White badge stock"
   },
   {
     "productId": "P102",
     "name": "Speaker Welcome Kit",
+    "description": "Welcome bundle prepared for conference speakers.",
     "category": "Merchandise",
     "unitOfMeasure": "Bundle",
     "price": "25.00",
-    "description": "Notebook, lanyard, and speaker badge"
+    "additionalInfo": "Notebook, lanyard, and speaker badge"
   },
   {
     "productId": "P103",
     "name": "Workshop Material Packet",
+    "description": "Printed packet containing materials for conference workshops.",
     "category": "Printed Material",
     "unitOfMeasure": "Printed Packet",
     "price": "8.99",
-    "description": "Session handouts and activity sheets"
+    "additionalInfo": "Session handouts and activity sheets"
   },
   {
     "productId": "P104",
     "name": "Session Room Signage",
+    "description": "Directional sign used to identify session rooms and guide attendees.",
     "category": "Printed Material",
     "unitOfMeasure": "Each",
     "price": "14.75",
-    "description": "Foam board directional sign"
+    "additionalInfo": "Foam board directional sign"
   },
   {
     "productId": "P105",
     "name": "VIP Attendee Package",
+    "description": "Premium attendee package with upgraded event access.",
     "category": "Event Access",
     "unitOfMeasure": "Ticket",
     "price": "49.99",
-    "description": "Priority seating and welcome gift"
+    "additionalInfo": "Priority seating and welcome gift"
   },
   {
     "productId": "P106",
     "name": "Conference Water Bottle",
+    "description": "Reusable branded water bottle for conference attendees.",
     "category": "Merchandise",
     "unitOfMeasure": "Each",
     "price": "12.00",
-    "description": "Reusable branded water bottle"
+    "additionalInfo": "Blue bottle with TechConnect 2026 logo"
   },
   {
     "productId": "P107",
     "name": "Conference Tote Bag",
+    "description": "Reusable tote bag for carrying event materials.",
     "category": "Merchandise",
     "unitOfMeasure": "Each",
     "price": "10.00",
-    "description": "Reusable tote bag for event materials"
+    "additionalInfo": "Black tote bag with event branding"
   },
   {
     "productId": "P108",
     "name": "Parking Pass",
+    "description": "One-day parking access pass for conference attendees.",
     "category": "Event Access",
     "unitOfMeasure": "Ticket",
     "price": "8.00",
-    "description": "One-day conference parking access"
+    "additionalInfo": "Valid for one conference day"
   },
   {
     "productId": "P109",
     "name": "Conference Lanyard",
+    "description": "Branded lanyard used to hold attendee badges.",
     "category": "Merchandise",
     "unitOfMeasure": "Each",
     "price": "3.25",
-    "description": "Branded lanyard for attendee badges"
+    "additionalInfo": "TechConnect 2026 branded lanyard"
   }
 ]

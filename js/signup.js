@@ -1,5 +1,47 @@
 // this stores all registered users
-let attendees = [];
+const storedAttendees = localStorage.getItem('techconnectAttendees');
+let attendees = storedAttendees ? JSON.parse(storedAttendees) : [];
+
+function saveAttendees() {
+  localStorage.setItem('techconnectAttendees', JSON.stringify(attendees, null, 2));
+}
+
+function normalizeAttendee(attendee, index) {
+  return {
+    id: attendee.id || Date.now() + index,
+    fullName: attendee.fullName || attendee.name || '',
+    email: attendee.email || '',
+    phone: attendee.phone || 'N/A',
+    age: Number(attendee.age) || 18,
+    affiliation: attendee.affiliation || 'Other / Guest'
+  };
+}
+
+function loadAttendees() {
+  if (storedAttendees === null) {
+    fetch('../data/attendees.json')
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('attendees.json not found');
+        }
+
+        return response.json();
+      })
+      .then(function (data) {
+        attendees = data.map(normalizeAttendee);
+        saveAttendees();
+        renderTable();
+        renderJSON();
+      })
+      .catch(function () {
+        renderTable();
+        renderJSON();
+      });
+  } else {
+    renderTable();
+    renderJSON();
+  }
+}
 
 // Shows or hides an error message for a form field
 function showError(fieldId, errId, show) {
@@ -69,6 +111,7 @@ function submitForm() {
     attendees.push(entry);
   }
 
+  saveAttendees();
   renderTable();
   renderJSON();
   resetForm();
@@ -122,6 +165,7 @@ function editAttendee(index) {
 function deleteAttendee(index) {
   if (confirm('Remove this attendee?')) {
     attendees.splice(index, 1);
+    saveAttendees();
     renderTable();
     renderJSON();
   }
@@ -153,16 +197,18 @@ function showToast() {
   }, 2500);
 }
 
-// downloads the stored attendee as a JSON file
+// downloads the current attendee list as the attendee JSON file
 function downloadJSON() {
   const blob = new Blob([JSON.stringify(attendees, null, 2)], { type: 'application/json' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'techconnect_attendees.json';
+  link.download = 'attendees.json';
   link.click();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadAttendees();
+
   document.getElementById('submitAttendee').addEventListener('click', submitForm);
   document.getElementById('downloadJson').addEventListener('click', downloadJSON);
 

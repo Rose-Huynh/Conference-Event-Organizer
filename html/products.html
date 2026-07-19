@@ -25,6 +25,7 @@
           <li class="nav-item"><a class="nav-link nav-link-active fw-bold" href="products.html">Products</a></li>
           <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
           <li class="nav-item"><a class="nav-link" href="signup.html">Register</a></li>
+          <li class="nav-item"><a class="nav-link" href="finalization.html">Finalize</a></li>
         </ul>
       </div>
     </div>
@@ -48,15 +49,20 @@
             <input type="hidden" id="editIndex" value="-1"/>
 
             <div class="mb-3">
-              <label class="form-label" for="productId">Product ID <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="productId" placeholder="Enter product ID"/>
-              <div class="error-msg" id="productIdErr">Product ID is required.</div>
+              <label class="form-label" for="productId">Product ID</label>
+              <input type="text" class="form-control" id="productId" placeholder="Auto-generated when saved" readonly/>
             </div>
 
             <div class="mb-3">
-              <label class="form-label" for="productTitle">Title or Description <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" id="productTitle" placeholder="Enter product title or description"/>
-              <div class="error-msg" id="productTitleErr">Title or description is required.</div>
+              <label class="form-label" for="productName">Product Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="productName" placeholder="Enter product name"/>
+              <div class="error-msg" id="productNameErr">Product name is required.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="productDescription">Description <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="productDescription" placeholder="Enter product description"/>
+              <div class="error-msg" id="productDescriptionErr">Description is required.</div>
             </div>
 
             <div class="mb-3">
@@ -108,7 +114,7 @@
 
         <section class="table-section mb-4">
           <h2 class="section-title mb-3">Search Products</h2>
-          <input type="text" class="form-control" id="searchInput" placeholder="Search by ID, name, description, category, or unit"/>
+          <input type="text" class="form-control" id="searchInput" placeholder="Search by ID, product name, description, category, unit, or info"/>
           <p class="section-help mt-2 mb-0">This search uses jQuery to filter the JSON product entries.</p>
         </section>
 
@@ -126,17 +132,18 @@
               <thead class="table-light">
                 <tr>
                   <th>ID</th>
-                  <th>Name</th>
+                  <th>Product Name</th>
+                  <th>Description</th>
                   <th>Category</th>
                   <th>Unit</th>
                   <th>Price</th>
-                  <th>Description</th>
+                  <th>Info</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="productTable">
                 <tr>
-                  <td colspan="7" class="text-center text-muted py-4">No products added yet.</td>
+                  <td colspan="8" class="text-center text-muted py-4">No products added yet.</td>
                 </tr>
               </tbody>
             </table>
