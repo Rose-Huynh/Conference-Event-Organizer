@@ -110,11 +110,11 @@ function renderProducts(productList) {
 }
 
 function renderCartJSON() {
-    $('#cartJsonPreview').text(JSON.stringify(buildCartPayload(), null, 2));
+  $('#cartJsonPreview').text(JSON.stringify(buildCartPayload(), null, 2));
 }
 
 function renderCart() {
-    if (cartItems.length === 0) {
+  if (cartItems.length === 0) {
     $('#cartTable').html('<tr><td colspan="5" class="text-center text-muted py-4">Your cart is empty.</td></tr>');
   } else {
     const rows = cartItems.map(function (item) {

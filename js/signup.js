@@ -1,6 +1,21 @@
 // this stores all registered users
 let attendees = [];
 
+function saveAttendees() {
+  localStorage.setItem('techconnectAttendees', JSON.stringify(attendees, null, 2));
+}
+
+function loadAttendeesFromDataFile() {
+  const savedAttendees = localStorage.getItem('techconnectAttendees');
+
+  if (savedAttendees) {
+    attendees = JSON.parse(savedAttendees);
+  }
+
+  renderTable();
+  renderJSON();
+}
+
 // Shows or hides an error message for a form field
 function showError(fieldId, errId, show) {
   const field = document.getElementById(fieldId);
