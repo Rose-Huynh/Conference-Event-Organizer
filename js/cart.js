@@ -7,17 +7,14 @@ function normalizeProductId(productId) {
 }
 
 function normalizeProduct(product) {
-  const hasNameField = product.name !== undefined;
-  const productName = hasNameField ? product.name : product.description;
-  const productDescription = hasNameField ? product.description : product.additionalInfo;
-
   return {
     productId: normalizeProductId(product.productId),
-    name: productName,
+    name: product.name || product.description,
+    description: product.description || 'N/A',
     category: product.category,
     unitOfMeasure: product.unitOfMeasure,
     price: Number(product.price).toFixed(2),
-    description: productDescription || 'N/A'
+    additionalInfo: product.additionalInfo || 'N/A'
   };
 }
 
@@ -28,11 +25,12 @@ function loadCartItems() {
     return {
       productId: normalizeProductId(item.productId),
       name: item.name || item.description,
-      description: item.name ? item.description : 'N/A',
+      description: item.description || 'N/A',
       category: item.category,
       unitOfMeasure: item.unitOfMeasure,
-      price: item.price,
-      quantity: item.quantity
+      price: Number(item.price).toFixed(2),
+      additionalInfo: item.additionalInfo || 'N/A',
+      quantity: Number(item.quantity) || 1
     };
   });
 }
@@ -111,11 +109,11 @@ function renderProducts(productList) {
   $('#productResults').html(rows);
 }
 
-  function renderCartJSON() {
+function renderCartJSON() {
     $('#cartJsonPreview').text(JSON.stringify(buildCartPayload(), null, 2));
-  }
+}
 
-  function renderCart() {
+function renderCart() {
     if (cartItems.length === 0) {
     $('#cartTable').html('<tr><td colspan="5" class="text-center text-muted py-4">Your cart is empty.</td></tr>');
   } else {
@@ -153,7 +151,8 @@ function searchProducts() {
       product.name.toLowerCase().includes(searchTerm) ||
       product.description.toLowerCase().includes(searchTerm) ||
       product.category.toLowerCase().includes(searchTerm) ||
-      product.unitOfMeasure.toLowerCase().includes(searchTerm)
+      product.unitOfMeasure.toLowerCase().includes(searchTerm) ||
+      product.additionalInfo.toLowerCase().includes(searchTerm)
     );
   });
 
@@ -184,6 +183,7 @@ function addToCart(productId) {
       category: product.category,
       unitOfMeasure: product.unitOfMeasure,
       price: product.price,
+      additionalInfo: product.additionalInfo,
       quantity: 1
     });
   }
@@ -242,6 +242,7 @@ function checkoutCart() {
     }
   });
 }
+
 function initializeCartPage() {
   products = loadAllProducts();
   cartItems = loadCartItems();

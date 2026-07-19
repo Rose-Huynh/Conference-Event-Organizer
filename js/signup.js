@@ -69,6 +69,7 @@ function submitForm() {
     attendees.push(entry);
   }
 
+  saveAttendees();
   renderTable();
   renderJSON();
   resetForm();
@@ -122,6 +123,7 @@ function editAttendee(index) {
 function deleteAttendee(index) {
   if (confirm('Remove this attendee?')) {
     attendees.splice(index, 1);
+    saveAttendees();
     renderTable();
     renderJSON();
   }
@@ -153,16 +155,18 @@ function showToast() {
   }, 2500);
 }
 
-// downloads the stored attendee as a JSON file
+// downloads the current attendee list as the attendee JSON file
 function downloadJSON() {
   const blob = new Blob([JSON.stringify(attendees, null, 2)], { type: 'application/json' });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
-  link.download = 'techconnect_attendees.json';
+  link.download = 'attendees.json';
   link.click();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadAttendeesFromDataFile();
+
   document.getElementById('submitAttendee').addEventListener('click', submitForm);
   document.getElementById('downloadJson').addEventListener('click', downloadJSON);
 

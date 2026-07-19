@@ -1,4 +1,5 @@
-let products = JSON.parse(localStorage.getItem('techconnectProducts')) || [];
+const storedProducts = localStorage.getItem('techconnectProducts');
+let products = storedProducts ? JSON.parse(storedProducts) : [];
 
 function saveProduct() {
   localStorage.setItem('techconnectProducts', JSON.stringify(products, null, 2));
@@ -24,16 +25,16 @@ function showError(fieldId, errorId, show) {
 }
 
 function validateProductForm() {
-  const productId = $('#productId').val().trim();
-  const productTitle = $('#productTitle').val().trim();
+  const productName = $('#productName').val().trim();
+  const productDescription = $('#productDescription').val().trim();
   const productCategory = $('#productCategory').val();
   const productUnit = $('#productUnit').val();
   const productPrice = $('#productPrice').val().trim();
 
   let valid = true;
 
-  valid = showError('productId', 'productIdErr', productId === '') && valid;
-  valid = showError('productTitle', 'productTitleErr', productTitle === '') && valid;
+  valid = showError('productName', 'productNameErr', productName === '') && valid;
+  valid = showError('productDescription', 'productDescriptionErr', productDescription === '') && valid;
   valid = showError('productCategory', 'productCategoryErr', productCategory === '') && valid;
   valid = showError('productUnit', 'productUnitErr', productUnit === '') && valid;
   valid = showError(
@@ -45,6 +46,20 @@ function validateProductForm() {
   return valid;
 }
 
+function generateProductId() {
+  const maxIdNumber = products.reduce(function (max, product) {
+    const idNumber = parseInt(String(product.productId).replace(/\D/g, ''), 10);
+
+    if (isNaN(idNumber)) {
+      return max;
+    }
+
+    return Math.max(max, idNumber);
+  }, 109);
+
+  return 'P' + String(maxIdNumber + 1).padStart(3, '0');
+}
+
 function submitProduct(event) {
   event.preventDefault();
 
@@ -53,8 +68,9 @@ function submitProduct(event) {
   const editIndex = parseInt($('#editIndex').val(), 10);
 
   const productEntry = {
-    productId: $('#productId').val().trim(),
-    description: $('#productTitle').val().trim(),
+    productId: editIndex >= 0 ? products[editIndex].productId : generateProductId(),
+    name: $('#productName').val().trim(),
+    description: $('#productDescription').val().trim(),
     category: $('#productCategory').val(),
     unitOfMeasure: $('#productUnit').val(),
     price: Number($('#productPrice').val()).toFixed(2),
@@ -80,7 +96,7 @@ function renderProducts(data) {
   if (data.length === 0) {
     $('#productTable').html(`
       <tr>
-        <td colspan="7" class="text-center text-muted py-4">No matching products found.</td>
+        <td colspan="8" class="text-center text-muted py-4">No matching products found.</td>
       </tr>
     `);
     return;
@@ -92,11 +108,12 @@ function renderProducts(data) {
     return `
       <tr>
         <td><strong>${product.productId}</strong></td>
+        <td>${product.name || product.description}</td>
         <td>${product.description}</td>
         <td><span class="badge-type">${product.category}</span></td>
         <td>${product.unitOfMeasure}</td>
         <td>$${product.price}</td>
-        <td>${product.additionalInfo}</td>
+        <td>${product.additionalInfo || 'N/A'}</td>
         <td>
           <button class="btn-edit me-1" type="button" data-index="${originalIndex}">Edit</button>
           <button class="btn-delete" type="button" data-index="${originalIndex}">Delete</button>
@@ -118,10 +135,11 @@ function searchProducts() {
   const filteredProducts = products.filter(product => {
     return (
       product.productId.toLowerCase().includes(searchTerm) ||
+      (product.name || '').toLowerCase().includes(searchTerm) ||
       product.description.toLowerCase().includes(searchTerm) ||
       product.category.toLowerCase().includes(searchTerm) ||
       product.unitOfMeasure.toLowerCase().includes(searchTerm) ||
-      product.additionalInfo.toLowerCase().includes(searchTerm)
+      (product.additionalInfo || '').toLowerCase().includes(searchTerm)
     );
   });
 
@@ -133,7 +151,8 @@ function editProduct(index) {
   const product = products[index];
 
   $('#productId').val(product.productId);
-  $('#productTitle').val(product.description);
+  $('#productName').val(product.name || product.description);
+  $('#productDescription').val(product.description);
   $('#productCategory').val(product.category);
   $('#productUnit').val(product.unitOfMeasure);
   $('#productPrice').val(product.price);
@@ -177,9 +196,27 @@ function showToast() {
   }, 2500);
 }
 
+function initializeProductPage() {
+  if (storedProducts === null) {
+    $.getJSON('../data/products.json')
+      .done(function (data) {
+        products = data;
+        saveProduct();
+        renderProducts(products);
+        renderJSON(products);
+      })
+      .fail(function () {
+        renderProducts(products);
+        renderJSON(products);
+      });
+  } else {
+    renderProducts(products);
+    renderJSON(products);
+  }
+}
+
 $(document).ready(function () {
-  renderProducts(products);
-  renderJSON(products);
+  initializeProductPage();
 
   $('#productForm').on('submit', submitProduct);
 
