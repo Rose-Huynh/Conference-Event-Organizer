@@ -1,19 +1,46 @@
 // this stores all registered users
-let attendees = [];
+const storedAttendees = localStorage.getItem('techconnectAttendees');
+let attendees = storedAttendees ? JSON.parse(storedAttendees) : [];
 
 function saveAttendees() {
   localStorage.setItem('techconnectAttendees', JSON.stringify(attendees, null, 2));
 }
 
+function normalizeAttendee(attendee, index) {
+  return {
+    id: attendee.id || Date.now() + index,
+    fullName: attendee.fullName || attendee.name || '',
+    email: attendee.email || '',
+    phone: attendee.phone || 'N/A',
+    age: Number(attendee.age) || 18,
+    affiliation: attendee.affiliation || 'Other / Guest'
+  };
+}
+
 function loadAttendees() {
-  const savedAttendees = localStorage.getItem('techconnectAttendees');
+  if (storedAttendees === null) {
+    fetch('../data/attendees.json')
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('attendees.json not found');
+        }
 
-  if (savedAttendees) {
-    attendees = JSON.parse(savedAttendees);
+        return response.json();
+      })
+      .then(function (data) {
+        attendees = data.map(normalizeAttendee);
+        saveAttendees();
+        renderTable();
+        renderJSON();
+      })
+      .catch(function () {
+        renderTable();
+        renderJSON();
+      });
+  } else {
+    renderTable();
+    renderJSON();
   }
-
-  renderTable();
-  renderJSON();
 }
 
 // Shows or hides an error message for a form field
