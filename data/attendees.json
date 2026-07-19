@@ -1,0 +1,26 @@
+[
+  {
+    "id": 2001,
+    "fullName": "Maya Johnson",
+    "email": "maya.johnson@example.edu",
+    "phone": "8145550123",
+    "age": 21,
+    "affiliation": "Penn State Student"
+  },
+  {
+    "id": 2002,
+    "fullName": "Ethan Patel",
+    "email": "ethan.patel@example.com",
+    "phone": "4125550188",
+    "age": 34,
+    "affiliation": "Industry Professional"
+  },
+  {
+    "id": 2003,
+    "fullName": "Sofia Chen",
+    "email": "sofia.chen@example.org",
+    "phone": "N/A",
+    "age": 29,
+    "affiliation": "Independent Researcher"
+  }
+]
