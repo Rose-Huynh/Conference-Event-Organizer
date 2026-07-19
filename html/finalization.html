@@ -127,7 +127,7 @@
               <tbody>
                 <tr ng-repeat="session in filteredSessions">
                   <td>
-                    <input type="checkbox" ng-checked="isSelected(session)" ng-click="toggleSession(session)"/>
+                    <input class="session-checkbox" type="checkbox" ng-checked="isSelected(session)" ng-click="toggleSession(session)"/>
                   </td>
                   <td>{{ session.title }}</td>
                   <td><span class="badge-type">{{ session.type }}</span></td>
