@@ -1,13 +1,14 @@
 const finalizationApp = angular.module('finalizationApp', []);
 
-finalizationApp.controller('FinalizationController', function ($scope) {
+finalizationApp.controller('FinalizationController', function ($scope, $http) {
   $scope.form = {
     fullName: '',
     email: '',
     participationType: '',
     sessionType: '',
     mealPreference: 'None',
-    notes: ''
+    notes: '',
+    confirmAttendance: false
   };
 
   $scope.errors = {};
@@ -18,6 +19,8 @@ finalizationApp.controller('FinalizationController', function ($scope) {
   $scope.filteredSessions = [];
   $scope.sessionTypes = [];
   $scope.finalizationJson = '{}';
+  $scope.apiStatus = 'No API request sent yet.';
+  $scope.apiStatusClass = 'text-muted';
 
 function normalizeSession(session) {
   return {
@@ -103,6 +106,7 @@ function isValidEmail(email) {
 
 function buildFinalizationDocument() {
   return {
+    finalizationId: 'FIN-' + Date.now(),
     attendeeId: $scope.selectedAttendeeId || 'N/A',
     fullName: $scope.form.fullName || 'N/A',
     email: $scope.form.email || 'N/A',
@@ -117,7 +121,9 @@ function buildFinalizationDocument() {
       };
     }),
     mealPreference: $scope.form.mealPreference,
-    finalNotes: $scope.form.notes.trim() || 'N/A'
+    finalNotes: $scope.form.notes.trim() || 'N/A',
+    confirmedAttendance: $scope.form.confirmAttendance === true,
+    submittedAt: new Date().toISOString()
   };
 }
 
@@ -126,7 +132,8 @@ function validateFinalizationForm() {
     attendee: $scope.selectedAttendeeId === '',
     participationType: $scope.form.participationType === '',
     sessionType: $scope.form.sessionType === '',
-    selectedSessions: $scope.selectedSessions.length === 0
+    selectedSessions: $scope.selectedSessions.length === 0,
+    confirmAttendance: $scope.form.confirmAttendance !== true
   };
 
   return !Object.values($scope.errors).some(Boolean) && isValidEmail($scope.form.email.trim());
@@ -181,15 +188,31 @@ $scope.submitFinalization = function (event) {
 
   if (!validateFinalizationForm()) {
     refreshJsonPreview();
+    $scope.apiStatus = 'Please fix the form errors before submitting.';
+    $scope.apiStatusClass = 'text-danger';
     return;
   }
 
   const finalizationDocument = buildFinalizationDocument();
   const savedFinalizations = JSON.parse(localStorage.getItem('techconnectFinalizations')) || [];
+
   savedFinalizations.push(finalizationDocument);
   localStorage.setItem('techconnectFinalizations', JSON.stringify(savedFinalizations, null, 2));
 
   $scope.finalizationJson = JSON.stringify(finalizationDocument, null, 2);
+
+  $scope.apiStatus = 'Sending finalization JSON to the REST API...';
+  $scope.apiStatusClass = 'text-muted';
+
+  $http.post('/api/finalization', finalizationDocument)
+    .then(function () {
+      $scope.apiStatus = 'Finalization data sent successfully to the REST API.';
+      $scope.apiStatusClass = 'text-success';
+    })
+    .catch(function () {
+      $scope.apiStatus = 'Future REST API is not available yet, but the AngularJS $http POST request and JSON payload are ready.';
+      $scope.apiStatusClass = 'text-danger';
+    });
 
   showToast();
 };
@@ -201,11 +224,16 @@ $scope.resetForm = function () {
     participationType: '',
     sessionType: '',
     mealPreference: 'None',
-    notes: ''
+    notes: '',
+    confirmAttendance: false
   };
+
   $scope.errors = {};
   $scope.selectedAttendeeId = '';
   $scope.selectedSessions = [];
+  $scope.apiStatus = 'No API request sent yet.';
+  $scope.apiStatusClass = 'text-muted';
+
   refreshJsonPreview();
 };
 
