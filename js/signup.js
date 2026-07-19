@@ -5,7 +5,7 @@ function saveAttendees() {
   localStorage.setItem('techconnectAttendees', JSON.stringify(attendees, null, 2));
 }
 
-function loadAttendeesFromDataFile() {
+function loadAttendees() {
   const savedAttendees = localStorage.getItem('techconnectAttendees');
 
   if (savedAttendees) {
@@ -180,7 +180,7 @@ function downloadJSON() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  loadAttendeesFromDataFile();
+  loadAttendees();
 
   document.getElementById('submitAttendee').addEventListener('click', submitForm);
   document.getElementById('downloadJson').addEventListener('click', downloadJSON);

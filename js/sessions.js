@@ -1,4 +1,17 @@
-let sessions = JSON.parse(localStorage.getItem('techconnectSessions')) || [];
+const storedSessions = localStorage.getItem('techconnectSessions');
+let sessions = storedSessions ? JSON.parse(storedSessions).map(normalizeSession) : [];
+
+function normalizeSession(session) {
+  return {
+    sessionId: session.sessionId || session.productId || '',
+    title: session.title || session.description || '',
+    type: session.type || session.category || '',
+    format: session.format || session.unitOfMeasure || '',
+    price: Number(session.price || 0).toFixed(2),
+    description: session.description || session.title || 'N/A',
+    additionalInfo: session.additionalInfo || 'N/A'
+  };
+}
 
 function saveSessions() {
   localStorage.setItem('techconnectSessions', JSON.stringify(sessions, null, 2));
@@ -51,13 +64,15 @@ function submitSession(event) {
   if (!validateSessionForm()) return;
 
   const editIndex = parseInt($('#editIndex').val(), 10);
+  const sessionTitle = $('#sessionTitle').val().trim();
 
   const sessionEntry = {
-    productId: $('#sessionId').val().trim(),
-    description: $('#sessionTitle').val().trim(),
-    category: $('#sessionCategory').val(),
-    unitOfMeasure: $('#sessionUnit').val(),
+    sessionId: $('#sessionId').val().trim(),
+    title: sessionTitle,
+    type: $('#sessionCategory').val(),
+    format: $('#sessionUnit').val(),
     price: Number($('#sessionPrice').val()).toFixed(2),
+    description: sessionTitle,
     additionalInfo: $('#sessionInfo').val().trim() || 'N/A'
   };
 
@@ -87,16 +102,16 @@ function renderSessions(data) {
   }
 
   const rows = data.map((session) => {
-    const originalIndex = sessions.findIndex(item => item.productId === session.productId);
+    const originalIndex = sessions.findIndex(item => item.sessionId === session.sessionId);
 
     return `
       <tr>
-        <td><strong>${session.productId}</strong></td>
-        <td>${session.description}</td>
-        <td><span class="badge-type">${session.category}</span></td>
-        <td>${session.unitOfMeasure}</td>
+        <td><strong>${session.sessionId}</strong></td>
+        <td>${session.title}</td>
+        <td><span class="badge-type">${session.type}</span></td>
+        <td>${session.format}</td>
         <td>$${session.price}</td>
-        <td>${session.additionalInfo}</td>
+        <td>${session.additionalInfo || 'N/A'}</td>
         <td>
           <button class="btn-edit me-1" type="button" data-index="${originalIndex}">Edit</button>
           <button class="btn-delete" type="button" data-index="${originalIndex}">Delete</button>
@@ -117,11 +132,12 @@ function searchSessions() {
 
   const filteredSessions = sessions.filter(session => {
     return (
-      session.productId.toLowerCase().includes(searchTerm) ||
-      session.description.toLowerCase().includes(searchTerm) ||
-      session.category.toLowerCase().includes(searchTerm) ||
-      session.unitOfMeasure.toLowerCase().includes(searchTerm) ||
-      session.additionalInfo.toLowerCase().includes(searchTerm)
+      (session.sessionId || '').toLowerCase().includes(searchTerm) ||
+      (session.title || '').toLowerCase().includes(searchTerm) ||
+      (session.type || '').toLowerCase().includes(searchTerm) ||
+      (session.format || '').toLowerCase().includes(searchTerm) ||
+      (session.description || '').toLowerCase().includes(searchTerm) ||
+      (session.additionalInfo || '').toLowerCase().includes(searchTerm)
     );
   });
 
@@ -132,10 +148,10 @@ function searchSessions() {
 function editSession(index) {
   const session = sessions[index];
 
-  $('#sessionId').val(session.productId);
-  $('#sessionTitle').val(session.description);
-  $('#sessionCategory').val(session.category);
-  $('#sessionUnit').val(session.unitOfMeasure);
+  $('#sessionId').val(session.sessionId);
+  $('#sessionTitle').val(session.title);
+  $('#sessionCategory').val(session.type);
+  $('#sessionUnit').val(session.format);
   $('#sessionPrice').val(session.price);
   $('#sessionInfo').val(session.additionalInfo === 'N/A' ? '' : session.additionalInfo);
 
@@ -177,9 +193,28 @@ function showToast() {
   }, 2500);
 }
 
+function initializeSessionPage() {
+  if (storedSessions === null) {
+    $.getJSON('../data/sessions.json')
+      .done(function (data) {
+        sessions = data.map(normalizeSession);
+        saveSessions();
+        renderSessions(sessions);
+        renderJSON(sessions);
+      })
+      .fail(function () {
+        renderSessions(sessions);
+        renderJSON(sessions);
+      });
+  } else {
+    saveSessions();
+    renderSessions(sessions);
+    renderJSON(sessions);
+  }
+}
+
 $(document).ready(function () {
-  renderSessions(sessions);
-  renderJSON(sessions);
+  initializeSessionPage();
 
   $('#sessionForm').on('submit', submitSession);
 

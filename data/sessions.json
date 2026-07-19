@@ -1,0 +1,47 @@
+[
+  {
+    "sessionId": "S101",
+    "title": "Opening Keynote",
+    "type": "Keynote",
+    "format": "Single Session",
+    "price": "0.00",
+    "description": "Welcome remarks and the state of technology in 2026.",
+    "additionalInfo": "Main Hall, 9:00 AM"
+  },
+  {
+    "sessionId": "S102",
+    "title": "Web Development Trends",
+    "type": "Workshop",
+    "format":  "Workshop Block",
+    "price": "0.00",
+    "description": "Modern frameworks, performance optimization, and the evolution of the web.",
+    "additionalInfo": "Workshop Room A, 10:00 AM"
+  },
+  {
+    "sessionId": "S103",
+    "title": "Database & Backend Systems",
+    "type": "Talk",
+    "format": "Presentation Slot",
+    "price": "2.50",
+    "description": "Scalable data storage, retrieval patterns, and backend architecture.",
+    "additionalInfo": "Panel Hall C, 10:00 AM"
+  },
+  {
+    "sessionId": "S104",
+    "title": "Student Project Showcase",
+    "type": "Showcase",
+    "format": "Presentation Slot",
+    "price": "2.50",
+    "description": "Featured student projects from information sciences programs.",
+    "additionalInfo": "Main Exhibit Hall, 11:00 AM"
+  },
+  {
+    "sessionId": "S105",
+    "title": "Closing Panel and Q&A",
+    "type": "Panel",
+    "format": "Panel Discussion",
+    "price": "0.00",
+    "description": "Open discussion and final questions with conference speakers.",
+    "additionalInfo": "Main Hall, 6:30 PM"
+  }
+]
