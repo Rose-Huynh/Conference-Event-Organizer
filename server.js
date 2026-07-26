@@ -73,6 +73,16 @@ function normalizeAttendee(attendee, index) {
   };
 }
 
+function normalizeProposalStatus(status) {
+  const value = String(status || 'pending').toLowerCase();
+
+  if (!['pending', 'approved', 'rejected'].includes(value)) {
+    return null;
+  }
+
+  return value;
+}
+
 // -------------------------
 // HEALTH CHECK
 // -------------------------
@@ -117,9 +127,10 @@ app.post('/api/proposals', function (req, res) {
     speakerEmail: proposal.speakerEmail,
     category: proposal.category,
     format: proposal.format,
+    durationMinutes: Number(proposal.durationMinutes) || 30,
     notes: proposal.notes || 'N/A',
-    status: 'Pending',
-    submittedAt: new Date().toISOString()
+    status: normalizeProposalStatus(proposal.status) || 'pending',
+    submittedAt: proposal.submittedAt || new Date().toISOString()
   };
 
   proposals.push(newProposal);
@@ -131,13 +142,13 @@ app.post('/api/proposals', function (req, res) {
   });
 });
 
-app.patch('/api/proposals/:id/status', function (req, res) {
+function updateProposalStatus(req, res) {
   const proposalId = Number(req.params.id);
-  const newStatus = req.body.status;
+  const newStatus = normalizeProposalStatus(req.body.status);
 
-  if (!['Approved', 'Rejected', 'Pending'].includes(newStatus)) {
+  if (!newStatus) {
     return res.status(400).json({
-      message: 'Status must be Approved, Rejected, or Pending.',
+      message: 'Status must be pending, approved, or rejected.',
       status: 'error'
     });
   }
@@ -156,12 +167,10 @@ app.patch('/api/proposals/:id/status', function (req, res) {
   proposal.status = newStatus;
   proposal.reviewedAt = new Date().toISOString();
 
-  res.json({
-    message: 'Proposal status updated successfully.',
-    status: 'success',
-    proposal: proposal
-  });
-});
+  res.json(proposal);
+}
+
+app.patch('/api/proposals/:id/status', updateProposalStatus);
 
 // -------------------------
 // PRODUCTS API
