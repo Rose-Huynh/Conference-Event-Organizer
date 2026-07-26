@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Returns - TechConnect 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="../css/returns.css" rel="stylesheet"/>
+</head>
+<body>
+
+  <div class="success-toast" id="successToast">Return request submitted successfully!</div>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="index.html"><span class="nav-dot"></span>TechConnect 2026</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto gap-3">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="sessions.html">Sessions</a></li>
+          <li class="nav-item"><a class="nav-link" href="proposal.html">Propose</a></li>
+          <li class="nav-item"><a class="nav-link" href="approval.html">Approvals</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">Products</a></li>
+          <li class="nav-item"><a class="nav-link" href="cart.html">Cart</a></li>
+          <li class="nav-item"><a class="nav-link nav-link-active fw-bold" href="returns.html">Returns</a></li>
+          <li class="nav-item"><a class="nav-link" href="finalization.html">Finalize</a></li>
+          <li class="nav-item"><a class="nav-link" href="signup.html">Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <span class="page-label">Returns</span>
+      <h1>Return Request</h1>
+      <p class="mb-0">Create and track return requests for conference store purchases.</p>
+    </div>
+  </header>
+
+  <main class="container py-5">
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <section class="form-card">
+          <h2 class="section-title mb-4">Request a Return</h2>
+
+          <form id="returnForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="productItem">Product Item <span class="text-danger">*</span></label>
+              <select class="form-select" id="productItem">
+                <option value="">Select product from items list</option>
+              </select>
+              <p class="section-help mt-2 mb-0">Select an item from the products list below to fill the return details.</p>
+              <div class="error-msg" id="productItemErr">Please select a product item.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="productName">Product Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="productName" placeholder="Selected product name" readonly/>
+              <div class="error-msg" id="productNameErr">Product name is required.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="price">Price <span class="text-danger">*</span></label>
+              <input type="number" class="form-control" id="price" min="0" step="0.01" placeholder="Selected product price" readonly/>
+              <div class="error-msg" id="priceErr">Enter a valid price.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="reason">Return Reason <span class="text-danger">*</span></label>
+              <select class="form-select" id="reason">
+                <option value="">Select reason</option>
+                <option>Wrong item ordered</option>
+                <option>Duplicate purchase</option>
+                <option>Damaged item</option>
+                <option>No longer needed</option>
+                <option>Other</option>
+              </select>
+              <div class="error-msg" id="reasonErr">Please select a return reason.</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label" for="condition">Item Condition <span class="text-danger">*</span></label>
+              <select class="form-select" id="condition">
+                <option value="">Select condition</option>
+                <option>Unopened</option>
+                <option>Opened</option>
+                <option>Damaged</option>
+                <option>Digital access unused</option>
+              </select>
+              <div class="error-msg" id="conditionErr">Please select item condition.</div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label" for="notes">Return Notes</label>
+              <textarea class="form-control" id="notes" rows="3" placeholder="Add request details or handling notes"></textarea>
+            </div>
+
+            <div class="d-grid gap-2 d-sm-flex">
+              <button type="submit" class="btn-submit flex-fill">Submit Return</button>
+              <button type="button" class="btn-reset flex-fill" id="clearReturn">Clear</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <div class="col-lg-7">
+        <section class="table-section mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="section-title mb-0">Return Requests</h2>
+            <span class="badge bg-primary" id="returnCount">0 requests</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Product</th>
+                  <th>Price</th>
+                  <th>Reason</th>
+                  <th>Condition</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="returnTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="table-section mb-4">
+          <h2 class="section-title mb-3">Return JSON Preview</h2>
+          <pre class="json-box" id="returnJsonPreview">{}</pre>
+        </section>
+
+        <section class="table-section">
+          <h2 class="section-title mb-3">API Submission Status</h2>
+          <p class="section-help mb-0" id="apiStatus">No API request sent yet.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-3 text-center">
+    <p class="mb-0">&copy; 2026 TechConnect Conference &nbsp;&middot;&nbsp; Returns Page</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/returns.js"></script>
+</body>
+</html>

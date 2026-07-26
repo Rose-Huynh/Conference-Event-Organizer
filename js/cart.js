@@ -60,6 +60,13 @@ function buildCartPayload() {
   };
 }
 
+function saveCheckoutSummary(cartPayload) {
+  localStorage.setItem('techconnectCheckoutSummary', JSON.stringify({
+    ...cartPayload,
+    summarizedAt: new Date().toISOString()
+  }, null, 2));
+}
+
 function showToast(message) {
   $('#cartToast').text(message).fadeIn(200);
 
@@ -199,10 +206,11 @@ function checkoutCart() {
   }
 
   const cartPayload = buildCartPayload();
+  saveCheckoutSummary(cartPayload);
 
   $('#checkoutMessage')
     .addClass('text-success')
-    .text('Cart is ready for checkout.');
+    .text('Cart summary: ' + cartPayload.items.length + ' item(s), total ' + money(cartPayload.total) + '. Opening billing...');
 
   $.ajax({
     url: cartEndpoint,
@@ -213,11 +221,19 @@ function checkoutCart() {
       $('#ajaxStatus')
         .addClass('text-success')
         .text(response.message || 'Cart data sent successfully to the Node REST API.');
+
+      setTimeout(function () {
+        window.location.href = 'billing.html';
+      }, 700);
     },
     error: function () {
       $('#ajaxStatus')
         .addClass('text-danger')
-        .text('Cart data could not be sent to the Node REST API.');
+        .text('Cart data could not be sent to the Node REST API. Opening billing with local cart summary.');
+
+      setTimeout(function () {
+        window.location.href = 'billing.html';
+      }, 1000);
     }
   });
 }
