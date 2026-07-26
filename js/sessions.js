@@ -1,5 +1,5 @@
-const storedSessions = localStorage.getItem('techconnectSessions');
-let sessions = storedSessions ? JSON.parse(storedSessions).map(normalizeSession) : [];
+const sessionsEndpoint = '/api/sessions';
+let sessions = [];
 
 function normalizeSession(session) {
   return {
@@ -11,10 +11,6 @@ function normalizeSession(session) {
     description: session.description || session.title || 'N/A',
     additionalInfo: session.additionalInfo || 'N/A'
   };
-}
-
-function saveSessions() {
-  localStorage.setItem('techconnectSessions', JSON.stringify(sessions, null, 2));
 }
 
 function showError(fieldId, errorId, show) {
@@ -66,8 +62,10 @@ function submitSession(event) {
   const editIndex = parseInt($('#editIndex').val(), 10);
   const sessionTitle = $('#sessionTitle').val().trim();
 
+  const originalSessionId = editIndex >= 0 ? sessions[editIndex].sessionId : null;
+
   const sessionEntry = {
-    sessionId: $('#sessionId').val().trim(),
+    sessionId: editIndex >= 0 ? originalSessionId : $('#sessionId').val().trim(),
     title: sessionTitle,
     type: $('#sessionCategory').val(),
     format: $('#sessionUnit').val(),
@@ -76,17 +74,25 @@ function submitSession(event) {
     additionalInfo: $('#sessionInfo').val().trim() || 'N/A'
   };
 
-  if (editIndex >= 0) {
-    sessions[editIndex] = sessionEntry;
-  } else {
-    sessions.push(sessionEntry);
-  }
+  const requestMethod = editIndex >= 0 ? 'PUT' : 'POST';
+  const requestUrl = editIndex >= 0
+    ? sessionsEndpoint + '/' + encodeURIComponent(originalSessionId)
+    : sessionsEndpoint;
 
-  saveSessions();
-  renderSessions(sessions);
-  renderJSON(sessions);
-  resetForm();
-  showToast();
+  $.ajax({
+    url: requestUrl,
+    method: requestMethod,
+    contentType: 'application/json',
+    data: JSON.stringify(sessionEntry),
+    success: function () {
+      initializeSessionPage();
+      resetForm();
+      showToast();
+    },
+    error: function () {
+      alert('Session could not be saved to the Node API.');
+    }
+  });
 }
 
 function renderSessions(data) {
@@ -101,8 +107,10 @@ function renderSessions(data) {
     return;
   }
 
-  const rows = data.map((session) => {
-    const originalIndex = sessions.findIndex(item => item.sessionId === session.sessionId);
+  const rows = data.map(function (session) {
+    const originalIndex = sessions.findIndex(function (item) {
+      return item.sessionId === session.sessionId;
+    });
 
     return `
       <tr>
@@ -130,14 +138,14 @@ function renderJSON(data) {
 function searchSessions() {
   const searchTerm = $('#searchInput').val().toLowerCase();
 
-  const filteredSessions = sessions.filter(session => {
+  const filteredSessions = sessions.filter(function (session) {
     return (
-      (session.sessionId || '').toLowerCase().includes(searchTerm) ||
-      (session.title || '').toLowerCase().includes(searchTerm) ||
-      (session.type || '').toLowerCase().includes(searchTerm) ||
-      (session.format || '').toLowerCase().includes(searchTerm) ||
-      (session.description || '').toLowerCase().includes(searchTerm) ||
-      (session.additionalInfo || '').toLowerCase().includes(searchTerm)
+      String(session.sessionId || '').toLowerCase().includes(searchTerm) ||
+      String(session.title || '').toLowerCase().includes(searchTerm) ||
+      String(session.type || '').toLowerCase().includes(searchTerm) ||
+      String(session.format || '').toLowerCase().includes(searchTerm) ||
+      String(session.description || '').toLowerCase().includes(searchTerm) ||
+      String(session.additionalInfo || '').toLowerCase().includes(searchTerm)
     );
   });
 
@@ -166,11 +174,19 @@ function editSession(index) {
 }
 
 function deleteSession(index) {
+  const session = sessions[index];
+
   if (confirm('Remove this session?')) {
-    sessions.splice(index, 1);
-    saveSessions();
-    renderSessions(sessions);
-    renderJSON(sessions);
+    $.ajax({
+      url: sessionsEndpoint + '/' + encodeURIComponent(session.sessionId),
+      method: 'DELETE',
+      success: function () {
+        initializeSessionPage();
+      },
+      error: function () {
+        alert('Session could not be deleted from the Node API.');
+      }
+    });
   }
 }
 
@@ -188,29 +204,23 @@ function resetForm() {
 function showToast() {
   $('#successToast').fadeIn(200);
 
-  setTimeout(() => {
+  setTimeout(function () {
     $('#successToast').fadeOut(200);
   }, 2500);
 }
 
 function initializeSessionPage() {
-  if (storedSessions === null) {
-    $.getJSON('../data/sessions.json')
-      .done(function (data) {
-        sessions = data.map(normalizeSession);
-        saveSessions();
-        renderSessions(sessions);
-        renderJSON(sessions);
-      })
-      .fail(function () {
-        renderSessions(sessions);
-        renderJSON(sessions);
-      });
-  } else {
-    saveSessions();
-    renderSessions(sessions);
-    renderJSON(sessions);
-  }
+  $.getJSON(sessionsEndpoint)
+    .done(function (data) {
+      sessions = data.map(normalizeSession);
+      renderSessions(sessions);
+      renderJSON(sessions);
+    })
+    .fail(function () {
+      renderSessions(sessions);
+      renderJSON(sessions);
+      alert('Could not load sessions from the Node API.');
+    });
 }
 
 $(document).ready(function () {

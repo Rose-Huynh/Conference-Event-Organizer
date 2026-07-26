@@ -1,10 +1,5 @@
-// this stores all registered users
-const storedAttendees = localStorage.getItem('techconnectAttendees');
-let attendees = storedAttendees ? JSON.parse(storedAttendees) : [];
-
-function saveAttendees() {
-  localStorage.setItem('techconnectAttendees', JSON.stringify(attendees, null, 2));
-}
+const attendeesEndpoint = '/api/attendees';
+let attendees = [];
 
 function normalizeAttendee(attendee, index) {
   return {
@@ -18,32 +13,26 @@ function normalizeAttendee(attendee, index) {
 }
 
 function loadAttendees() {
-  if (storedAttendees === null) {
-    fetch('../data/attendees.json')
-      .then(function (response) {
-        if (!response.ok) {
-          throw new Error('attendees.json not found');
-        }
+  fetch(attendeesEndpoint)
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('Could not load attendees from API.');
+      }
 
-        return response.json();
-      })
-      .then(function (data) {
-        attendees = data.map(normalizeAttendee);
-        saveAttendees();
-        renderTable();
-        renderJSON();
-      })
-      .catch(function () {
-        renderTable();
-        renderJSON();
-      });
-  } else {
-    renderTable();
-    renderJSON();
-  }
+      return response.json();
+    })
+    .then(function (data) {
+      attendees = data.map(normalizeAttendee);
+      renderTable();
+      renderJSON();
+    })
+    .catch(function () {
+      renderTable();
+      renderJSON();
+      alert('Could not load attendees from the Node API.');
+    });
 }
 
-// Shows or hides an error message for a form field
 function showError(fieldId, errId, show) {
   const field = document.getElementById(fieldId);
   const err = document.getElementById(errId);
@@ -59,7 +48,6 @@ function showError(fieldId, errId, show) {
   return !show;
 }
 
-// Validates name, email, phone, age, and affiliation before saving
 function validateForm() {
   const name = document.getElementById('fullName').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -84,18 +72,22 @@ function validateForm() {
   }
 
   const ageNum = parseInt(age, 10);
-  valid = showError('age', 'ageErr', !age || isNaN(ageNum) || ageNum < 1 || ageNum > 121 || !/^\d+$/.test(age)) && valid;
+  valid = showError(
+    'age',
+    'ageErr',
+    !age || isNaN(ageNum) || ageNum < 1 || ageNum > 121 || !/^\d+$/.test(age)
+  ) && valid;
 
   valid = showError('affiliation', 'affiliationErr', !affiliation) && valid;
 
   return valid;
 }
 
-// Saves the form data into the attendees array as a JavaScript object
 function submitForm() {
   if (!validateForm()) return;
 
   const editIndex = parseInt(document.getElementById('editIndex').value, 10);
+
   const entry = {
     id: editIndex >= 0 ? attendees[editIndex].id : Date.now(),
     fullName: document.getElementById('fullName').value.trim(),
@@ -105,20 +97,35 @@ function submitForm() {
     affiliation: document.getElementById('affiliation').value
   };
 
-  if (editIndex >= 0) {
-    attendees[editIndex] = entry;
-  } else {
-    attendees.push(entry);
-  }
+  const requestMethod = editIndex >= 0 ? 'PUT' : 'POST';
+  const requestUrl = editIndex >= 0
+    ? attendeesEndpoint + '/' + encodeURIComponent(entry.id)
+    : attendeesEndpoint;
 
-  saveAttendees();
-  renderTable();
-  renderJSON();
-  resetForm();
-  showToast();
+  fetch(requestUrl, {
+    method: requestMethod,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(entry)
+  })
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error('Could not save attendee.');
+      }
+
+      return response.json();
+    })
+    .then(function () {
+      loadAttendees();
+      resetForm();
+      showToast();
+    })
+    .catch(function () {
+      alert('Attendee could not be saved to the Node API.');
+    });
 }
 
-// updates the attendee table to show all currently saved registrations
 function renderTable() {
   const tbody = document.getElementById('attendeeTable');
   document.getElementById('countBadge').textContent = attendees.length + ' registered';
@@ -128,52 +135,66 @@ function renderTable() {
     return;
   }
 
-  tbody.innerHTML = attendees.map((a, i) => `
-    <tr>
-      <td><strong>${a.fullName}</strong></td>
-      <td>${a.email}</td>
-      <td>${a.age}</td>
-      <td><span class="badge-role">${a.affiliation}</span></td>
-      <td>
-        <button class="btn-edit me-1" type="button" data-action="edit" data-index="${i}">Edit</button>
-        <button class="btn-delete" type="button" data-action="delete" data-index="${i}">Delete</button>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = attendees.map(function (attendee, index) {
+    return `
+      <tr>
+        <td><strong>${attendee.fullName}</strong></td>
+        <td>${attendee.email}</td>
+        <td>${attendee.age}</td>
+        <td><span class="badge-role">${attendee.affiliation}</span></td>
+        <td>
+          <button class="btn-edit me-1" type="button" data-action="edit" data-index="${index}">Edit</button>
+          <button class="btn-delete" type="button" data-action="delete" data-index="${index}">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
-// Displays the saved attendees as JSON on the page
 function renderJSON() {
   document.getElementById('jsonViewer').textContent = JSON.stringify(attendees, null, 2);
 }
 
-// loads a selected attendee's saved information back into the form so it can be edited
 function editAttendee(index) {
-  const a = attendees[index];
-  document.getElementById('fullName').value = a.fullName;
-  document.getElementById('email').value = a.email;
-  document.getElementById('phone').value = a.phone === 'N/A' ? '' : a.phone;
-  document.getElementById('age').value = a.age;
-  document.getElementById('affiliation').value = a.affiliation;
+  const attendee = attendees[index];
+
+  document.getElementById('fullName').value = attendee.fullName;
+  document.getElementById('email').value = attendee.email;
+  document.getElementById('phone').value = attendee.phone === 'N/A' ? '' : attendee.phone;
+  document.getElementById('age').value = attendee.age;
+  document.getElementById('affiliation').value = attendee.affiliation;
   document.getElementById('editIndex').value = index;
   document.getElementById('formTitle').textContent = 'Update Attendee';
   document.querySelector('.btn-submit').textContent = 'Save Changes';
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// removes a selected attendee after confirmation and refreshes the table and JSON display
 function deleteAttendee(index) {
+  const attendee = attendees[index];
+
   if (confirm('Remove this attendee?')) {
-    attendees.splice(index, 1);
-    saveAttendees();
-    renderTable();
-    renderJSON();
+    fetch(attendeesEndpoint + '/' + encodeURIComponent(attendee.id), {
+      method: 'DELETE'
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('Could not delete attendee.');
+        }
+
+        return response.json();
+      })
+      .then(function () {
+        loadAttendees();
+      })
+      .catch(function () {
+        alert('Attendee could not be deleted from the Node API.');
+      });
   }
 }
 
-// clears the form fields, removes validation errors, and reset the form back to add mode.
 function resetForm() {
-  ['fullName', 'email', 'phone', 'age'].forEach(id => {
+  ['fullName', 'email', 'phone', 'age'].forEach(function (id) {
     document.getElementById(id).value = '';
     document.getElementById(id).classList.remove('input-error');
   });
@@ -183,40 +204,43 @@ function resetForm() {
   document.getElementById('formTitle').textContent = 'Add Attendee';
   document.querySelector('.btn-submit').textContent = 'Add Attendee';
 
-  ['nameErr', 'emailErr', 'phoneErr', 'ageErr', 'affiliationErr'].forEach(id => {
+  ['nameErr', 'emailErr', 'phoneErr', 'ageErr', 'affiliationErr'].forEach(function (id) {
     document.getElementById(id).classList.remove('show');
   });
 }
 
-// Briefly shows a success message after an attendee is saved.
 function showToast() {
   const toast = document.getElementById('successToast');
+
   toast.style.display = 'block';
-  setTimeout(() => {
+
+  setTimeout(function () {
     toast.style.display = 'none';
   }, 2500);
 }
 
-// downloads the current attendee list as the attendee JSON file
 function downloadJSON() {
   const blob = new Blob([JSON.stringify(attendees, null, 2)], { type: 'application/json' });
   const link = document.createElement('a');
+
   link.href = URL.createObjectURL(blob);
   link.download = 'attendees.json';
   link.click();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
   loadAttendees();
 
   document.getElementById('submitAttendee').addEventListener('click', submitForm);
   document.getElementById('downloadJson').addEventListener('click', downloadJSON);
 
-  document.getElementById('attendeeTable').addEventListener('click', event => {
+  document.getElementById('attendeeTable').addEventListener('click', function (event) {
     const button = event.target.closest('button[data-action]');
+
     if (!button) return;
 
     const index = parseInt(button.dataset.index, 10);
+
     if (button.dataset.action === 'edit') {
       editAttendee(index);
     }
