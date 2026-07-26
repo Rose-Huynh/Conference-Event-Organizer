@@ -1,0 +1,294 @@
+/* approval.css — Program committee review page.
+ *
+ * Same shared block as signup.css / proposal.css so the page matches the
+ * rest of the site, then the review-specific pieces: filter tabs, proposal
+ * cards and status badges. When Helly's shared styles land on navstyle/726
+ * everything above "Approval page specific" can be deleted.
+ */
+
+:root {
+  --navy: #0D1B2A;
+  --blue: #1A56DB;
+  --sky: #3B82F6;
+  --gold: #F59E0B;
+  --light: #F0F4FF;
+  --gray: #6B7280;
+  --green: #059669;
+  --red: #DC2626;
+}
+
+body { font-family: 'Inter', sans-serif; background: var(--light); color: var(--navy); }
+
+.navbar { border-bottom: 1px solid #D1D5DB; }
+.navbar-brand {
+  font-family: 'Inter', sans-serif; font-weight: 700;
+  font-size: 1.05rem; color: var(--navy) !important;
+  letter-spacing: -0.01em;
+}
+.nav-dot {
+  display: inline-block; width: 10px; height: 10px;
+  background: var(--gold); border-radius: 50%; margin-right: 6px;
+}
+.nav-link { color: var(--gray) !important; font-weight: 500; font-size: 0.9rem; }
+.nav-link:hover { color: var(--blue) !important; }
+.nav-link-active { color: var(--blue) !important; }
+
+.page-header {
+  background: var(--navy); color: #fff; padding: 3rem 0 2.5rem;
+}
+.page-header h1 {
+  font-family: 'Poppins', sans-serif; font-weight: 800;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+}
+.page-header p { color: #9CA3AF; }
+
+.table-section { background: #fff; border-radius: 12px; border: 1px solid #D1D5DB; padding: 2rem; }
+.section-title { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.3rem; }
+
+.badge-role {
+  display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px;
+  font-size: 0.72rem; font-weight: 600; background: #EFF6FF; color: var(--blue);
+}
+
+.json-box {
+  background: #0D1B2A; color: #86EFAC; border-radius: 8px;
+  padding: 1.2rem; font-family: monospace; font-size: 0.8rem;
+  white-space: pre-wrap; max-height: 300px; overflow-y: auto;
+}
+.json-help-text { font-size: 0.85rem; }
+
+.success-toast {
+  position: fixed; top: 1.2rem; right: 1.2rem;
+  background: #059669; color: #fff;
+  padding: 0.75rem 1.2rem; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 500; display: none; z-index: 9999;
+}
+
+footer { background: #111827; color: #6B7280; font-size: 0.82rem; }
+footer a { color: var(--sky); text-decoration: none; }
+
+
+/* ================= Approval page specific ================= */
+
+/* ---- Toolbar: status filters + search ---- */
+
+.review-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  background: #fff;
+  border: 1px solid #D1D5DB;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--gray);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+.filter-btn.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.filter-count {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: rgba(13, 27, 42, 0.08);
+  font-size: 0.72rem;
+}
+
+.filter-btn.active .filter-count { background: rgba(255, 255, 255, 0.22); }
+
+.search-input {
+  max-width: 320px;
+  border: 1px solid #D1D5DB;
+  border-radius: 7px;
+  font-size: 0.9rem;
+}
+
+.search-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 0.2rem rgba(26, 86, 219, 0.15);
+}
+
+/* ---- Proposal cards ---- */
+
+.proposal-card {
+  background: #fff;
+  border: 1px solid #D1D5DB;
+  border-left: 4px solid #D1D5DB;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.proposal-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 0.2rem;
+}
+
+.proposal-meta { font-size: 0.82rem; color: var(--gray); }
+
+.proposal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.9rem 0;
+}
+
+.badge-type, .badge-soft {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.badge-type { background: #EFF6FF; color: var(--blue); }
+.badge-soft { background: #F3F4F6; color: var(--gray); }
+
+.proposal-abstract {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 0.3rem;
+}
+
+.proposal-abstract.clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--blue);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.proposal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+
+/* Approve and Reject follow the outline style of btn-edit / btn-delete,
+   but sized up because they are the main action on this page. */
+.btn-approve {
+  background: none;
+  border: 1px solid var(--green);
+  color: var(--green);
+  border-radius: 5px;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-approve:hover:not(:disabled) { background: var(--green); color: #fff; }
+
+.btn-reject {
+  background: none;
+  border: 1px solid var(--red);
+  color: var(--red);
+  border-radius: 5px;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-reject:hover:not(:disabled) { background: var(--red); color: #fff; }
+
+.btn-approve:disabled, .btn-reject:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(26, 86, 219, 0.4);
+  outline-offset: 2px;
+}
+
+/* ---- Status badges ---- */
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.status-pending  { background: #FEF3C7; color: #92400E; }
+.status-approved { background: #D1FAE5; color: #065F46; }
+.status-rejected { background: #FEE2E2; color: #991B1B; }
+
+/* Card edge picks up the status colour */
+.proposal-card:has(.status-pending)  { border-left-color: var(--gold); }
+.proposal-card:has(.status-approved) { border-left-color: var(--green); }
+.proposal-card:has(.status-rejected) { border-left-color: var(--red); }
+
+/* ---- Empty state ---- */
+
+.empty-state {
+  background: #fff;
+  border: 1px dashed #D1D5DB;
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.empty-state a { color: var(--blue); }
+
+/* The review list is long, so the JSON panel gets more room than signup's */
+.json-box { max-height: 560px; }
+
+/* ---- Responsive ---- */
+
+@media (max-width: 768px) {
+  .review-toolbar { flex-direction: column; align-items: stretch; }
+  .search-input { max-width: 100%; }
+}
+
+@media (max-width: 576px) {
+  .table-section, .proposal-card { padding: 1.25rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
