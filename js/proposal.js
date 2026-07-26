@@ -3,16 +3,9 @@
  * React manages the form state, validation runs client-side before anything
  * leaves the page, and the finished proposal is serialized to JSON and sent
  * to the Node.js REST service over AJAX.
- *
- * While OFFLINE_MODE is true the page saves to localStorage instead, so it
- * can be demoed and screenshotted before the backend is ready.
  */
 
 const API_BASE = 'http://localhost:3000';
-const STORAGE_KEY = 'techconnectProposals';
-
-// Flip to false once the Node service is running.
-const OFFLINE_MODE = true;
 
 const TRACKS = [
   'Web Development',
@@ -93,23 +86,6 @@ function validate(form) {
   return errors;
 }
 
-// Offline fallback so the page works before the Node service exists.
-function readLocalProposals() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function saveLocalProposal(proposal) {
-  const all = readLocalProposals();
-  const saved = { id: Date.now(), ...proposal };
-  all.push(saved);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(all, null, 2));
-  return saved;
-}
-
 function ProposalForm() {
   const [form, setForm] = React.useState(EMPTY_FORM);
   const [errors, setErrors] = React.useState({});
@@ -160,22 +136,15 @@ function ProposalForm() {
     setFailure('');
 
     try {
-      let saved;
+      // AJAX call to the Node.js REST service
+      const response = await fetch(API_BASE + '/api/proposals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(proposal)
+      });
 
-      if (OFFLINE_MODE) {
-        await new Promise((resolve) => setTimeout(resolve, 400));
-        saved = saveLocalProposal(proposal);
-      } else {
-        // AJAX call to the Node.js REST service
-        const response = await fetch(API_BASE + '/api/proposals', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(proposal)
-        });
-
-        if (!response.ok) throw new Error('Server responded with ' + response.status);
-        saved = await response.json();
-      }
+      if (!response.ok) throw new Error('Server responded with ' + response.status);
+      const saved = await response.json();
 
       setLastSaved(saved);
       setForm(EMPTY_FORM);
