@@ -585,25 +585,6 @@ app.post('/api/finalizations', function (req, res) {
   });
 });
 
-// Optional alias in case any older file still calls /api/finalization
-app.post('/api/finalization', function (req, res) {
-  const finalization = req.body;
-
-  const newFinalization = {
-    id: Date.now(),
-    ...finalization,
-    submittedAt: new Date().toISOString()
-  };
-
-  finalizations.push(newFinalization);
-
-  res.status(201).json({
-    message: 'Finalization submitted successfully.',
-    status: 'success',
-    finalization: newFinalization
-  });
-});
-
 // -------------------------
 // DEFAULT HOMEPAGE REDIRECT
 // -------------------------
