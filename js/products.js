@@ -1,9 +1,5 @@
-const storedProducts = localStorage.getItem('techconnectProducts');
-let products = storedProducts ? JSON.parse(storedProducts) : [];
-
-function saveProduct() {
-  localStorage.setItem('techconnectProducts', JSON.stringify(products, null, 2));
-}
+const productsEndpoint = '/api/products';
+let products = [];
 
 function showError(fieldId, errorId, show) {
   const field = $('#' + fieldId);
@@ -77,17 +73,25 @@ function submitProduct(event) {
     additionalInfo: $('#productInfo').val().trim() || 'N/A'
   };
 
-  if (editIndex >= 0) {
-    products[editIndex] = productEntry;
-  } else {
-    products.push(productEntry);
-  }
+  const requestMethod = editIndex >= 0 ? 'PUT' : 'POST';
+  const requestUrl = editIndex >= 0
+    ? productsEndpoint + '/' + encodeURIComponent(productEntry.productId)
+    : productsEndpoint;
 
-  saveProduct();
-  renderProducts(products);
-  renderJSON(products);
-  resetForm();
-  showToast();
+  $.ajax({
+    url: requestUrl,
+    method: requestMethod,
+    contentType: 'application/json',
+    data: JSON.stringify(productEntry),
+    success: function () {
+      initializeProductPage();
+      resetForm();
+      showToast();
+    },
+    error: function () {
+      alert('Product could not be saved to the Node API.');
+    }
+  });
 }
 
 function renderProducts(data) {
@@ -102,8 +106,10 @@ function renderProducts(data) {
     return;
   }
 
-  const rows = data.map((product) => {
-    const originalIndex = products.findIndex(item => item.productId === product.productId);
+  const rows = data.map(function (product) {
+    const originalIndex = products.findIndex(function (item) {
+      return item.productId === product.productId;
+    });
 
     return `
       <tr>
@@ -132,14 +138,14 @@ function renderJSON(data) {
 function searchProducts() {
   const searchTerm = $('#searchInput').val().toLowerCase();
 
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products.filter(function (product) {
     return (
-      product.productId.toLowerCase().includes(searchTerm) ||
-      (product.name || '').toLowerCase().includes(searchTerm) ||
-      product.description.toLowerCase().includes(searchTerm) ||
-      product.category.toLowerCase().includes(searchTerm) ||
-      product.unitOfMeasure.toLowerCase().includes(searchTerm) ||
-      (product.additionalInfo || '').toLowerCase().includes(searchTerm)
+      String(product.productId || '').toLowerCase().includes(searchTerm) ||
+      String(product.name || '').toLowerCase().includes(searchTerm) ||
+      String(product.description || '').toLowerCase().includes(searchTerm) ||
+      String(product.category || '').toLowerCase().includes(searchTerm) ||
+      String(product.unitOfMeasure || '').toLowerCase().includes(searchTerm) ||
+      String(product.additionalInfo || '').toLowerCase().includes(searchTerm)
     );
   });
 
@@ -169,11 +175,19 @@ function editProduct(index) {
 }
 
 function deleteProduct(index) {
+  const product = products[index];
+
   if (confirm('Remove this product?')) {
-    products.splice(index, 1);
-    saveProduct();
-    renderProducts(products);
-    renderJSON(products);
+    $.ajax({
+      url: productsEndpoint + '/' + encodeURIComponent(product.productId),
+      method: 'DELETE',
+      success: function () {
+        initializeProductPage();
+      },
+      error: function () {
+        alert('Product could not be deleted from the Node API.');
+      }
+    });
   }
 }
 
@@ -191,28 +205,23 @@ function resetForm() {
 function showToast() {
   $('#successToast').fadeIn(200);
 
-  setTimeout(() => {
+  setTimeout(function () {
     $('#successToast').fadeOut(200);
   }, 2500);
 }
 
 function initializeProductPage() {
-  if (storedProducts === null) {
-    $.getJSON('../data/products.json')
-      .done(function (data) {
-        products = data;
-        saveProduct();
-        renderProducts(products);
-        renderJSON(products);
-      })
-      .fail(function () {
-        renderProducts(products);
-        renderJSON(products);
-      });
-  } else {
-    renderProducts(products);
-    renderJSON(products);
-  }
+  $.getJSON(productsEndpoint)
+    .done(function (data) {
+      products = data;
+      renderProducts(products);
+      renderJSON(products);
+    })
+    .fail(function () {
+      renderProducts(products);
+      renderJSON(products);
+      alert('Could not load products from the Node API.');
+    });
 }
 
 $(document).ready(function () {

@@ -1,19 +1,21 @@
-let productCatalog = [];
+const productsEndpoint = '/api/products';
+const cartEndpoint = '/api/cart';
+
 let products = [];
 let cartItems = [];
 
 function normalizeProductId(productId) {
-  return productId.trim().toUpperCase().replace(/^EVT/, 'P');
+  return String(productId || '').trim().toUpperCase().replace(/^EVT/, 'P');
 }
 
 function normalizeProduct(product) {
   return {
     productId: normalizeProductId(product.productId),
-    name: product.name || product.description,
+    name: product.name || product.description || 'Unnamed Product',
     description: product.description || 'N/A',
-    category: product.category,
-    unitOfMeasure: product.unitOfMeasure,
-    price: Number(product.price).toFixed(2),
+    category: product.category || 'N/A',
+    unitOfMeasure: product.unitOfMeasure || 'N/A',
+    price: Number(product.price || 0).toFixed(2),
     additionalInfo: product.additionalInfo || 'N/A'
   };
 }
@@ -24,32 +26,15 @@ function loadCartItems() {
   return savedCartItems.map(function (item) {
     return {
       productId: normalizeProductId(item.productId),
-      name: item.name || item.description,
+      name: item.name || item.description || 'Unnamed Product',
       description: item.description || 'N/A',
-      category: item.category,
-      unitOfMeasure: item.unitOfMeasure,
-      price: Number(item.price).toFixed(2),
+      category: item.category || 'N/A',
+      unitOfMeasure: item.unitOfMeasure || 'N/A',
+      price: Number(item.price || 0).toFixed(2),
       additionalInfo: item.additionalInfo || 'N/A',
       quantity: Number(item.quantity) || 1
     };
   });
-}
-
-function loadAllProducts() {
-  const savedProducts = JSON.parse(localStorage.getItem('techconnectProducts')) || [];
-  const productMap = {};
-
-  productCatalog.forEach(function (product) {
-    const normalizedProduct = normalizeProduct(product);
-    productMap[normalizedProduct.productId] = normalizedProduct;
-  });
-
-  savedProducts.forEach(function (product) {
-    const normalizedProduct = normalizeProduct(product);
-    productMap[normalizedProduct.productId] = normalizedProduct;
-  });
-
-  return Object.values(productMap);
 }
 
 function saveCart() {
@@ -68,7 +53,7 @@ function getCartTotal() {
 
 function buildCartPayload() {
   return {
-    cartId: 'TC-CART-001',
+    cartId: 'TC-CART-' + Date.now(),
     event: 'TechConnect 2026',
     items: cartItems,
     total: Number(getCartTotal().toFixed(2))
@@ -135,24 +120,22 @@ function renderCart() {
 
     $('#cartTable').html(rows);
   }
-  
-  $('#cartTotal').text(money(getCartTotal()));
 
+  $('#cartTotal').text(money(getCartTotal()));
   renderCartJSON();
 }
 
 function searchProducts() {
-  products = loadAllProducts();
   const searchTerm = $('#productSearch').val().toLowerCase();
 
   const results = products.filter(function (product) {
     return (
-      product.productId.toLowerCase().includes(searchTerm) ||
-      product.name.toLowerCase().includes(searchTerm) ||
-      product.description.toLowerCase().includes(searchTerm) ||
-      product.category.toLowerCase().includes(searchTerm) ||
-      product.unitOfMeasure.toLowerCase().includes(searchTerm) ||
-      product.additionalInfo.toLowerCase().includes(searchTerm)
+      String(product.productId || '').toLowerCase().includes(searchTerm) ||
+      String(product.name || '').toLowerCase().includes(searchTerm) ||
+      String(product.description || '').toLowerCase().includes(searchTerm) ||
+      String(product.category || '').toLowerCase().includes(searchTerm) ||
+      String(product.unitOfMeasure || '').toLowerCase().includes(searchTerm) ||
+      String(product.additionalInfo || '').toLowerCase().includes(searchTerm)
     );
   });
 
@@ -190,9 +173,7 @@ function addToCart(productId) {
 
   saveCart();
   renderCart();
-
   clearCheckoutMessages();
-
   showToast('Product added to cart.');
 }
 
@@ -203,9 +184,7 @@ function removeFromCart(productId) {
 
   saveCart();
   renderCart();
-
   clearCheckoutMessages();
-
   showToast('Product removed from cart.');
 }
 
@@ -226,28 +205,44 @@ function checkoutCart() {
     .text('Cart is ready for checkout.');
 
   $.ajax({
-    url: '/api/cart',
+    url: cartEndpoint,
     method: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(cartPayload),
-    success: function () {
+    success: function (response) {
       $('#ajaxStatus')
         .addClass('text-success')
-        .text('Cart data sent successfully to the REST API.');
+        .text(response.message || 'Cart data sent successfully to the Node REST API.');
     },
     error: function () {
       $('#ajaxStatus')
         .addClass('text-danger')
-        .text('Future REST API is not available yet, but the AJAX request and JSON payload are ready.');
+        .text('Cart data could not be sent to the Node REST API.');
     }
   });
 }
 
+function loadProductsFromApi() {
+  $.getJSON(productsEndpoint)
+    .done(function (data) {
+      products = data.map(normalizeProduct);
+      renderProducts(products);
+    })
+    .fail(function () {
+      products = [];
+      renderProducts(products);
+
+      $('#ajaxStatus')
+        .addClass('text-danger')
+        .text('Could not load products from the Node API.');
+    });
+}
+
 function initializeCartPage() {
-  products = loadAllProducts();
   cartItems = loadCartItems();
   saveCart();
-  renderProducts(products);
+
+  loadProductsFromApi();
   renderCart();
 
   $('#productSearch').on('keyup', searchProducts);
@@ -264,13 +259,5 @@ function initializeCartPage() {
 }
 
 $(document).ready(function () {
-  $.getJSON('../data/products.json')
-    .done(function (data) {
-      productCatalog = data;
-      initializeCartPage();
-    })
-    .fail(function () {
-      console.warn('Could not load data/products.json. Start the site with a local server and try again.');
-      initializeCartPage();
-    });
+  initializeCartPage();
 });

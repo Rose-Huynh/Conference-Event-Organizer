@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 const path = require('path');
 
 const app = express();
@@ -17,6 +18,60 @@ let proposals = [];
 let billingDetails = [];
 let returnRequests = [];
 let carts = [];
+
+// Data loaded from existing JSON files
+let products = loadJsonFile('data/products.json').map(normalizeProduct);
+let sessions = loadJsonFile('data/sessions.json').map(normalizeSession);
+let attendees = loadJsonFile('data/attendees.json').map(normalizeAttendee);
+let finalizations = [];
+
+// -------------------------
+// DATA SEED HELPERS
+// -------------------------
+
+function loadJsonFile(relativePath) {
+  try {
+    const filePath = path.join(__dirname, relativePath);
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (error) {
+    return [];
+  }
+}
+
+function normalizeProduct(product) {
+  return {
+    productId: product.productId || 'P' + Date.now(),
+    name: product.name || product.description || '',
+    description: product.description || 'N/A',
+    category: product.category || '',
+    unitOfMeasure: product.unitOfMeasure || '',
+    price: Number(product.price || 0).toFixed(2),
+    additionalInfo: product.additionalInfo || 'N/A'
+  };
+}
+
+function normalizeSession(session) {
+  return {
+    sessionId: session.sessionId || session.productId || 'S' + Date.now(),
+    title: session.title || session.description || '',
+    type: session.type || session.category || '',
+    format: session.format || session.unitOfMeasure || '',
+    price: Number(session.price || 0).toFixed(2),
+    description: session.description || session.title || 'N/A',
+    additionalInfo: session.additionalInfo || 'N/A'
+  };
+}
+
+function normalizeAttendee(attendee, index) {
+  return {
+    id: attendee.id || Date.now() + index,
+    fullName: attendee.fullName || attendee.name || '',
+    email: attendee.email || '',
+    phone: attendee.phone || 'N/A',
+    age: Number(attendee.age) || 18,
+    affiliation: attendee.affiliation || 'Other / Guest'
+  };
+}
 
 // -------------------------
 // HEALTH CHECK
@@ -105,6 +160,220 @@ app.patch('/api/proposals/:id/status', function (req, res) {
     message: 'Proposal status updated successfully.',
     status: 'success',
     proposal: proposal
+  });
+});
+
+// -------------------------
+// PRODUCTS API
+// -------------------------
+
+app.get('/api/products', function (req, res) {
+  res.json(products);
+});
+
+app.post('/api/products', function (req, res) {
+  const product = normalizeProduct(req.body);
+
+  if (
+    !product.productId ||
+    !product.name ||
+    !product.description ||
+    !product.category ||
+    !product.unitOfMeasure
+  ) {
+    return res.status(400).json({
+      message: 'Missing required product fields.',
+      status: 'error'
+    });
+  }
+
+  products.push(product);
+
+  res.status(201).json({
+    message: 'Product saved successfully.',
+    status: 'success',
+    product: product
+  });
+});
+
+app.put('/api/products/:productId', function (req, res) {
+  const productId = req.params.productId;
+
+  const index = products.findIndex(function (item) {
+    return item.productId === productId;
+  });
+
+  if (index === -1) {
+    return res.status(404).json({
+      message: 'Product not found.',
+      status: 'error'
+    });
+  }
+
+  products[index] = normalizeProduct({
+    ...req.body,
+    productId: productId
+  });
+
+  res.json({
+    message: 'Product updated successfully.',
+    status: 'success',
+    product: products[index]
+  });
+});
+
+app.delete('/api/products/:productId', function (req, res) {
+  const productId = req.params.productId;
+
+  products = products.filter(function (item) {
+    return item.productId !== productId;
+  });
+
+  res.json({
+    message: 'Product deleted successfully.',
+    status: 'success'
+  });
+});
+
+// -------------------------
+// SESSIONS API
+// -------------------------
+
+app.get('/api/sessions', function (req, res) {
+  res.json(sessions);
+});
+
+app.post('/api/sessions', function (req, res) {
+  const session = normalizeSession(req.body);
+
+  if (
+    !session.sessionId ||
+    !session.title ||
+    !session.type ||
+    !session.format
+  ) {
+    return res.status(400).json({
+      message: 'Missing required session fields.',
+      status: 'error'
+    });
+  }
+
+  sessions.push(session);
+
+  res.status(201).json({
+    message: 'Session saved successfully.',
+    status: 'success',
+    session: session
+  });
+});
+
+app.put('/api/sessions/:sessionId', function (req, res) {
+  const sessionId = req.params.sessionId;
+
+  const index = sessions.findIndex(function (item) {
+    return item.sessionId === sessionId;
+  });
+
+  if (index === -1) {
+    return res.status(404).json({
+      message: 'Session not found.',
+      status: 'error'
+    });
+  }
+
+  sessions[index] = normalizeSession({
+    ...req.body,
+    sessionId: sessionId
+  });
+
+  res.json({
+    message: 'Session updated successfully.',
+    status: 'success',
+    session: sessions[index]
+  });
+});
+
+app.delete('/api/sessions/:sessionId', function (req, res) {
+  const sessionId = req.params.sessionId;
+
+  sessions = sessions.filter(function (item) {
+    return item.sessionId !== sessionId;
+  });
+
+  res.json({
+    message: 'Session deleted successfully.',
+    status: 'success'
+  });
+});
+
+// -------------------------
+// ATTENDEES API
+// -------------------------
+
+app.get('/api/attendees', function (req, res) {
+  res.json(attendees);
+});
+
+app.post('/api/attendees', function (req, res) {
+  const attendee = normalizeAttendee(req.body, attendees.length);
+
+  if (
+    !attendee.fullName ||
+    !attendee.email ||
+    !attendee.age ||
+    !attendee.affiliation
+  ) {
+    return res.status(400).json({
+      message: 'Missing required attendee fields.',
+      status: 'error'
+    });
+  }
+
+  attendees.push(attendee);
+
+  res.status(201).json({
+    message: 'Attendee saved successfully.',
+    status: 'success',
+    attendee: attendee
+  });
+});
+
+app.put('/api/attendees/:id', function (req, res) {
+  const attendeeId = Number(req.params.id);
+
+  const index = attendees.findIndex(function (item) {
+    return Number(item.id) === attendeeId;
+  });
+
+  if (index === -1) {
+    return res.status(404).json({
+      message: 'Attendee not found.',
+      status: 'error'
+    });
+  }
+
+  attendees[index] = normalizeAttendee({
+    ...req.body,
+    id: attendeeId
+  }, index);
+
+  res.json({
+    message: 'Attendee updated successfully.',
+    status: 'success',
+    attendee: attendees[index]
+  });
+});
+
+app.delete('/api/attendees/:id', function (req, res) {
+  const attendeeId = Number(req.params.id);
+
+  attendees = attendees.filter(function (item) {
+    return Number(item.id) !== attendeeId;
+  });
+
+  res.json({
+    message: 'Attendee deleted successfully.',
+    status: 'success'
   });
 });
 
@@ -231,6 +500,10 @@ app.patch('/api/returns/:id/status', function (req, res) {
   });
 });
 
+// -------------------------
+// CART API
+// -------------------------
+
 app.get('/api/cart', function (req, res) {
   res.json(carts);
 });
@@ -260,6 +533,65 @@ app.post('/api/cart', function (req, res) {
     message: 'Cart submitted successfully.',
     status: 'success',
     cart: newCart
+  });
+});
+
+// -------------------------
+// FINALIZATIONS API
+// -------------------------
+
+app.get('/api/finalizations', function (req, res) {
+  res.json(finalizations);
+});
+
+app.post('/api/finalizations', function (req, res) {
+  const finalization = req.body;
+
+  if (
+    !finalization.fullName ||
+    !finalization.email ||
+    !finalization.participationType ||
+    !finalization.preferredSessionType ||
+    !finalization.selectedSessions ||
+    finalization.selectedSessions.length === 0
+  ) {
+    return res.status(400).json({
+      message: 'Missing required finalization fields.',
+      status: 'error'
+    });
+  }
+
+  const newFinalization = {
+    id: Date.now(),
+    ...finalization,
+    submittedAt: new Date().toISOString()
+  };
+
+  finalizations.push(newFinalization);
+
+  res.status(201).json({
+    message: 'Finalization submitted successfully.',
+    status: 'success',
+    finalization: newFinalization
+  });
+});
+
+// Optional alias in case any older file still calls /api/finalization
+app.post('/api/finalization', function (req, res) {
+  const finalization = req.body;
+
+  const newFinalization = {
+    id: Date.now(),
+    ...finalization,
+    submittedAt: new Date().toISOString()
+  };
+
+  finalizations.push(newFinalization);
+
+  res.status(201).json({
+    message: 'Finalization submitted successfully.',
+    status: 'success',
+    finalization: newFinalization
   });
 });
 

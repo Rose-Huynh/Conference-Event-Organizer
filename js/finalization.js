@@ -1,6 +1,10 @@
 const finalizationApp = angular.module('finalizationApp', []);
 
 finalizationApp.controller('FinalizationController', function ($scope, $http) {
+  const finalizationEndpoint = '/api/finalizations';
+  const sessionsEndpoint = '/api/sessions';
+  const attendeesEndpoint = '/api/attendees';
+
   $scope.form = {
     fullName: '',
     email: '',
@@ -22,85 +26,50 @@ finalizationApp.controller('FinalizationController', function ($scope, $http) {
   $scope.apiStatus = 'No API request sent yet.';
   $scope.apiStatusClass = 'text-muted';
 
-  const apiEndpoint = 'https://jsonplaceholder.typicode.com/posts';
-
   function normalizeSession(session) {
     return {
-      sessionId: session.sessionId || session.productId,
-      title: session.title || session.description,
-      type: session.type || session.category,
-      format: session.format || session.unitOfMeasure
+      sessionId: session.sessionId || session.productId || '',
+      title: session.title || session.description || '',
+      type: session.type || session.category || '',
+      format: session.format || session.unitOfMeasure || ''
     };
   }
 
-  function mergeSessions(dataFileSessions) {
-    const savedSessions = JSON.parse(localStorage.getItem('techconnectSessions')) || [];
-    const sessionMap = {};
-
-    dataFileSessions.forEach(function (session) {
-      const normalizedSession = normalizeSession(session);
-      sessionMap[normalizedSession.sessionId] = normalizedSession;
-    });
-
-    savedSessions.forEach(function (session) {
-      const normalizedSession = normalizeSession(session);
-      sessionMap[normalizedSession.sessionId] = normalizedSession;
-    });
-
-    return Object.values(sessionMap);
-  }
-
-  function loadSessions() {
-    $.getJSON('../data/sessions.json')
-      .done(function (dataFileSessions) {
-        $scope.$apply(function () {
-          $scope.sessions = mergeSessions(dataFileSessions);
-          $scope.filteredSessions = $scope.sessions;
-          $scope.sessionTypes = buildSessionTypes($scope.sessions);
-        });
-      })
-      .fail(function () {
-        const savedSessions = JSON.parse(localStorage.getItem('techconnectSessions')) || [];
-
-        $scope.$apply(function () {
-          $scope.sessions = mergeSessions(savedSessions);
-          $scope.filteredSessions = $scope.sessions;
-          $scope.sessionTypes = buildSessionTypes($scope.sessions);
-        });
-      });
-  }
-
   function buildSessionTypes(sessionList) {
-    const types = sessionList.map(function (session) {
-      return session.type;
-    });
+    const types = sessionList
+      .map(function (session) {
+        return session.type;
+      })
+      .filter(function (type) {
+        return type !== '';
+      });
 
     return [...new Set(types)].sort();
   }
 
-  function loadAttendees() {
-    const savedAttendees = JSON.parse(localStorage.getItem('techconnectAttendees')) || [];
-
-    $.getJSON('../data/attendees.json')
-      .done(function (dataFileAttendees) {
-        const attendeeMap = {};
-
-        dataFileAttendees.forEach(function (attendee) {
-          attendeeMap[attendee.id] = attendee;
-        });
-
-        savedAttendees.forEach(function (attendee) {
-          attendeeMap[attendee.id] = attendee;
-        });
-
-        $scope.$apply(function () {
-          $scope.attendees = Object.values(attendeeMap);
-        });
+  function loadSessions() {
+    $http.get(sessionsEndpoint)
+      .then(function (response) {
+        $scope.sessions = response.data.map(normalizeSession);
+        $scope.filteredSessions = $scope.sessions;
+        $scope.sessionTypes = buildSessionTypes($scope.sessions);
+        refreshJsonPreview();
       })
-      .fail(function () {
-        $scope.$apply(function () {
-          $scope.attendees = savedAttendees;
-        });
+      .catch(function () {
+        $scope.apiStatus = 'Could not load sessions from the Node API.';
+        $scope.apiStatusClass = 'text-danger';
+      });
+  }
+
+  function loadAttendees() {
+    $http.get(attendeesEndpoint)
+      .then(function (response) {
+        $scope.attendees = response.data;
+        refreshJsonPreview();
+      })
+      .catch(function () {
+        $scope.apiStatus = 'Could not load attendees from the Node API.';
+        $scope.apiStatusClass = 'text-danger';
       });
   }
 
@@ -200,23 +169,19 @@ finalizationApp.controller('FinalizationController', function ($scope, $http) {
     }
 
     const finalizationDocument = buildFinalizationDocument();
-    const savedFinalizations = JSON.parse(localStorage.getItem('techconnectFinalizations')) || [];
-
-    savedFinalizations.push(finalizationDocument);
-    localStorage.setItem('techconnectFinalizations', JSON.stringify(savedFinalizations, null, 2));
 
     $scope.finalizationJson = JSON.stringify(finalizationDocument, null, 2);
 
-    $scope.apiStatus = 'Sending finalization JSON to the mock REST API...';
+    $scope.apiStatus = 'Sending finalization JSON to the Node REST API...';
     $scope.apiStatusClass = 'text-muted';
 
-    $http.post(apiEndpoint, finalizationDocument)
+    $http.post(finalizationEndpoint, finalizationDocument)
       .then(function (response) {
-        $scope.apiStatus = 'Finalization data sent successfully to the mock REST API. Response ID: ' + response.data.id;
+        $scope.apiStatus = response.data.message;
         $scope.apiStatusClass = 'text-success';
       })
       .catch(function () {
-        $scope.apiStatus = 'The REST API request could not be completed, but the AngularJS $http POST request and JSON payload were prepared.';
+        $scope.apiStatus = 'The Node REST API request could not be completed.';
         $scope.apiStatusClass = 'text-danger';
       });
 
