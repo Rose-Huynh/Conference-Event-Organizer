@@ -188,7 +188,7 @@ function ApprovalDashboard() {
         setProposals(updated);
       } else {
         const response = await fetch(API_BASE + '/api/proposals/' + id + '/status', {
-          method: 'PUT',
+          method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status })
         });
