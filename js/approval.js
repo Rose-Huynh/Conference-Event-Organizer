@@ -2,64 +2,11 @@
  *
  * React loads every proposal from the Node.js REST service over AJAX, renders
  * them, and sends the new status back when a reviewer approves or rejects one.
- *
- * While OFFLINE_MODE is true it reads and writes localStorage instead, using
- * the same key the proposal page writes to, so the two pages talk to each
- * other before the backend is ready.
  */
 
 const API_BASE = 'http://localhost:3000';
-const STORAGE_KEY = 'techconnectProposals';
-
-// Flip to false once the Node service is running. Keep this matched with proposal.js.
-const OFFLINE_MODE = true;
 
 const FILTERS = ['pending', 'approved', 'rejected', 'all'];
-
-// A couple of examples so the page isn't blank on a fresh browser.
-const SEED_PROPOSALS = [
-  {
-    id: 1,
-    title: 'Breaking and Fixing Your First Web App',
-    abstract: 'A hands-on look at the most common web vulnerabilities, how attackers find them, and the small code changes that shut them down. Attendees follow along against a deliberately broken demo app.',
-    speakerName: 'Jane Smith',
-    speakerEmail: 'jane@psu.edu',
-    category: 'Cybersecurity',
-    format: 'Workshop',
-    durationMinutes: 60,
-    status: 'pending',
-    submittedAt: '2026-07-24T14:05:00.000Z'
-  },
-  {
-    id: 2,
-    title: 'What Actually Changed in Frontend This Year',
-    abstract: 'A practical tour of the frontend tooling that stuck around and the hype that did not, aimed at students who are about to pick a stack for their first internship project.',
-    speakerName: 'Marcus Lee',
-    speakerEmail: 'mlee@psu.edu',
-    category: 'Web Development',
-    format: 'Talk',
-    durationMinutes: 30,
-    status: 'pending',
-    submittedAt: '2026-07-25T09:30:00.000Z'
-  }
-];
-
-function readLocalProposals() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === null) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_PROPOSALS, null, 2));
-      return SEED_PROPOSALS;
-    }
-    return JSON.parse(stored) || [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function writeLocalProposals(proposals) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(proposals, null, 2));
-}
 
 function formatDate(value) {
   if (!value) return 'N/A';
@@ -152,14 +99,10 @@ function ApprovalDashboard() {
     setError('');
 
     try {
-      if (OFFLINE_MODE) {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        setProposals(readLocalProposals());
-      } else {
-        const response = await fetch(API_BASE + '/api/proposals');
-        if (!response.ok) throw new Error('Server responded with ' + response.status);
-        setProposals(await response.json());
-      }
+      // AJAX call to the Node.js REST service
+      const response = await fetch(API_BASE + '/api/proposals');
+      if (!response.ok) throw new Error('Server responded with ' + response.status);
+      setProposals(await response.json());
     } catch (err) {
       console.error(err);
       setError('Could not load proposals. Make sure the Node service is running, then reload.');
@@ -179,24 +122,15 @@ function ApprovalDashboard() {
     setError('');
 
     try {
-      if (OFFLINE_MODE) {
-        await new Promise((resolve) => setTimeout(resolve, 250));
-        const updated = proposals.map((item) =>
-          item.id === id ? { ...item, status } : item
-        );
-        writeLocalProposals(updated);
-        setProposals(updated);
-      } else {
-        const response = await fetch(API_BASE + '/api/proposals/' + id + '/status', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status })
-        });
+      const response = await fetch(API_BASE + '/api/proposals/' + id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
 
-        if (!response.ok) throw new Error('Server responded with ' + response.status);
-        const saved = await response.json();
-        setProposals(proposals.map((item) => (item.id === id ? saved : item)));
-      }
+      if (!response.ok) throw new Error('Server responded with ' + response.status);
+      const saved = await response.json();
+      setProposals(proposals.map((item) => (item.id === id ? saved : item)));
 
       showToast(status === 'pending' ? 'Decision undone.' : 'Proposal ' + status + '.');
     } catch (err) {
