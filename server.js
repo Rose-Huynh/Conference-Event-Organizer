@@ -16,6 +16,7 @@ app.use(express.static(path.join(__dirname)));
 let proposals = [];
 let billingDetails = [];
 let returnRequests = [];
+let carts = [];
 
 // -------------------------
 // HEALTH CHECK
@@ -227,6 +228,38 @@ app.patch('/api/returns/:id/status', function (req, res) {
     message: 'Return request status updated successfully.',
     status: 'success',
     returnRequest: returnRequest
+  });
+});
+
+app.get('/api/cart', function (req, res) {
+  res.json(carts);
+});
+
+app.post('/api/cart', function (req, res) {
+  const cart = req.body;
+
+  if (!cart.items || !Array.isArray(cart.items) || cart.items.length === 0) {
+    return res.status(400).json({
+      message: 'Cart must contain at least one item.',
+      status: 'error'
+    });
+  }
+
+  const newCart = {
+    id: Date.now(),
+    cartId: cart.cartId || 'N/A',
+    event: cart.event || 'TechConnect 2026',
+    items: cart.items,
+    total: cart.total || 0,
+    submittedAt: new Date().toISOString()
+  };
+
+  carts.push(newCart);
+
+  res.status(201).json({
+    message: 'Cart submitted successfully.',
+    status: 'success',
+    cart: newCart
   });
 });
 
