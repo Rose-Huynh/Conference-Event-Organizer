@@ -144,7 +144,9 @@ function ProposalForm() {
       });
 
       if (!response.ok) throw new Error('Server responded with ' + response.status);
-      const saved = await response.json();
+      // The server wraps the created proposal: { message, status, proposal }
+      const data = await response.json();
+      const saved = data.proposal || data;
 
       setLastSaved(saved);
       setForm(EMPTY_FORM);
