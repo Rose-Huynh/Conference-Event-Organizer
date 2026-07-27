@@ -1,0 +1,18 @@
+[
+  {
+    "billingId": "BILL-1001",
+    "fullName": "Maya Lee",
+    "address": {
+      "street": "123 Example Avenue",
+      "city": "State College",
+      "state": "PA",
+      "zipCode": "16801"
+    },
+    "paymentMethod": {
+      "type": "Credit Card",
+      "cardBrand": "Visa",
+      "cardLastFour": "1111",
+      "expirationDate": "12/28"
+    }
+  }
+]
