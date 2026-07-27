@@ -1,4 +1,5 @@
 const billingEndpoint = '/api/billing';
+const billingDetailsSeedEndpoint = '../data/billing-details.json';
 let cartItems = [];
 
 function money(value) {
@@ -23,6 +24,41 @@ function loadCartItems() {
       price: Number(item.price || 0).toFixed(2)
     };
   });
+}
+
+function autofillBillingDetails() {
+  $.getJSON(billingDetailsSeedEndpoint)
+    .done(function (billingDetails) {
+      const savedBilling = Array.isArray(billingDetails) ? billingDetails[0] : billingDetails;
+
+      if (!savedBilling) {
+        return;
+      }
+
+      const address = savedBilling.address || {};
+      const paymentMethod = savedBilling.paymentMethod || {};
+
+      $('#fullName').val(savedBilling.fullName || '');
+      $('#address').val(address.street || '');
+      $('#city').val(address.city || '');
+      $('#state').val(address.state || '');
+      $('#zipCode').val(address.zipCode || '');
+      $('#cardNumber').val(paymentMethod.testCardNumber || paymentMethod.cardNumber || '');
+      $('#expirationDate').val(paymentMethod.expirationDate || '');
+      $('#securityCode').val(paymentMethod.securityCode || '');
+
+      $('.form-control').each(function () {
+        if ($(this).val().trim() !== '') {
+          $(this).addClass('input-success');
+        }
+      });
+
+      renderBillingPreview();
+      setApiStatus('Billing details auto-filled from data/billing-details.json.', 'text-success');
+    })
+    .fail(function () {
+      setApiStatus('Could not auto-fill billing details from data/billing-details.json.', 'text-danger');
+    });
 }
 
 function buildBillingDocument() {
@@ -165,6 +201,7 @@ $(document).ready(function () {
   loadCartItems();
   renderOrderSummary();
   renderBillingPreview();
+  autofillBillingDetails();
 
   $('#billingForm').on('submit', submitBilling);
   $('#clearBilling').on('click', resetBillingForm);

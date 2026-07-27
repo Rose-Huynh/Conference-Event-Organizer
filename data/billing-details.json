@@ -11,8 +11,10 @@
     "paymentMethod": {
       "type": "Credit Card",
       "cardBrand": "Visa",
+      "testCardNumber": "4111111111111111",
       "cardLastFour": "1111",
-      "expirationDate": "12/28"
+      "expirationDate": "2028-12",
+      "securityCode": "123"
     }
   }
 ]
