@@ -1,10 +1,31 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+const MONGODB_URI = process.env.MONGODB_URI;
+
+async function connectToDatabase() {
+  if (!MONGODB_URI) {
+    console.error('Missing MONGODB_URI in .env file.');
+    process.exit(1);
+  }
+
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      dbName: 'techconnect2026'
+    });
+    console.log('Connected to MongoDB successfully.');
+  } catch (error) {
+    console.error('MongoDB connection error:', error.message);
+    process.exit(1);
+  }
+}
 
 // Middleware
 app.use(cors());
@@ -597,8 +618,14 @@ app.get('/', function (req, res) {
 // SERVER START
 // -------------------------
 
-app.listen(PORT, function () {
-  console.log('TechConnect 2026 API running at http://localhost:' + PORT);
-  console.log('Open homepage at http://localhost:' + PORT + '/html/index.html');
-  console.log('Health check: http://localhost:' + PORT + '/api/health');
-});
+async function startServer() {
+  await connectToDatabase();
+
+  app.listen(PORT, function () {
+    console.log('TechConnect 2026 API running at http://localhost:' + PORT);
+    console.log('Open homepage at http://localhost:' + PORT + '/html/index.html');
+    console.log('Health check: http://localhost:' + PORT + '/api/health');
+  });
+}
+
+startServer();
