@@ -278,6 +278,7 @@ async function seedCollectionIfEmpty(Model, relativePath, normalizer) {
   const count = await Model.countDocuments();
 
   if (count > 0) {
+    console.log(Model.collection.name + ' already has data. Skipping seed.');
     return;
   }
 
