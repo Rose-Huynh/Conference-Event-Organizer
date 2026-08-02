@@ -291,9 +291,9 @@ async function seedCollectionIfEmpty(Model, relativePath, normalizer) {
 }
 
 async function seedDatabase() {
-  await seedCollectionIfEmpty(Product, 'data/products.json', normalizeProduct);
-  await seedCollectionIfEmpty(Session, 'data/sessions.json', normalizeSession);
-  await seedCollectionIfEmpty(Attendee, 'data/attendees.json', normalizeAttendee);
+  await seedCollectionIfEmpty(Product, 'public/data/products.json', normalizeProduct);
+  await seedCollectionIfEmpty(Session, 'public/data/sessions.json', normalizeSession);
+  await seedCollectionIfEmpty(Attendee, 'public/data/attendees.json', normalizeAttendee);
 }
 
 // -------------------------
